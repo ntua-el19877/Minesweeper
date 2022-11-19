@@ -7,15 +7,18 @@ import java.util.Scanner;
  * Minesweeper Project 
  * Texnologi polumeson
  * 18/11/22
- */
+ */   
 
 public class Main {
 
  
    public static void main(String []args) throws Exception {
-       System.out.println("Hello Worlddddd"); // prints Hello World
-       int arr[]=new int[4];
-       arr=ReadFile.main("SCENARIO-2");
-       System.out.println(arr[1]);
+      int scenario_info[]=new int[6];
+      scenario_info=Lib.ReadFile("SCENARIO-2");
+      //for(int i=0;i<6;i++)
+      //   System.out.println(scenario_info[i]);
+
+      Lib.create_bomb_positions(scenario_info[4],scenario_info[5],scenario_info[1],scenario_info[3]);
     }
+
  }
