@@ -33,7 +33,7 @@ public class ReadFile {
         }
         catch(Exception BufferedReader1)
         {
-            System.out.println("Erros occured while reading "+string+".txt");
+            System.out.println("InvalidDescriptionException occured while reading "+string+".txt");
         }
         return scenario_numbers;
         
@@ -61,11 +61,23 @@ public class ReadFile {
         }
         catch(Exception BufferedReader2)
         {
-            System.out.println("Erros occured while reading "+string+"-DIFFICULTY-MARGINS.txt");
+            System.out.println("InvalidDescriptionException occured while reading "+string+"-DIFFICULTY-MARGINS.txt");
         }
         return scenario_numbers_margins;
     }
     
+    private static void check_scenario(int[] arr4,int[] arr8) throws Exception
+    {
+        if(!(
+            (arr4[0]!=arr8[0])|
+            (arr4[1]<arr8[3]+1)|
+            (arr4[1]>arr8[4]-1)|
+            (arr4[2]<arr8[5]+1)|
+            (arr4[2]>arr8[6]-1)|
+            (arr4[3]==arr8[7])))
+            throw new Exception("InvalidValueException");
+            return;
+    }
     // main driver method
     public static int[] main(String string) throws Exception
     {
@@ -76,6 +88,7 @@ public class ReadFile {
         scenario_numbers=read_scenario(string);
         scenario_numbers_margins=read_scenario_margins(string);
         
+        check_scenario(scenario_numbers,scenario_numbers_margins);
 
         return scenario_numbers;
     }
