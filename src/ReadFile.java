@@ -69,11 +69,11 @@ public class ReadFile {
     private static void check_scenario(int[] arr4,int[] arr8) throws Exception
     {
         if(!(
-            (arr4[0]!=arr8[0])|
-            (arr4[1]<arr8[3]+1)|
-            (arr4[1]>arr8[4]-1)|
-            (arr4[2]<arr8[5]+1)|
-            (arr4[2]>arr8[6]-1)|
+            (arr4[0]==arr8[0])&&
+            (arr4[1]>=arr8[3])&&
+            (arr4[1]<=arr8[4])&&
+            (arr4[2]>=arr8[5])&&
+            (arr4[2]<=arr8[6])&&
             (arr4[3]==arr8[7])))
             throw new Exception("InvalidValueException");
             return;
