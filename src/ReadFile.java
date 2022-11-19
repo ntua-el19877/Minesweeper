@@ -1,6 +1,6 @@
 package src;
 
-// Java Program to illustrate Reading from FileReader
+// Java Program to illustrate Reading text file aand returning array[] with scenario info
 // using BufferedReader Class
  
 // Importing input output classes
@@ -10,7 +10,7 @@ import java.io.*;
 public class ReadFile {
  
     // main driver method
-    public static void main(String string) throws Exception
+    public static int[] main(String string) throws Exception
     {
  
         // File path is passed as parameter
@@ -37,6 +37,6 @@ public class ReadFile {
             scenario_numbers[i] = Integer.parseInt(st);
             System.out.println(st);
         }
-        
+        return scenario_numbers;
     }
 }
