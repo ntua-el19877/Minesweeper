@@ -24,14 +24,19 @@ public class ReadFile {
         // Creating an object of BufferedReader class
         BufferedReader br
             = new BufferedReader(new FileReader(file));
- 
+        
+        int scenario_numbers[]=new int[4];
         // Declaring a string variable
         String st;
         // Condition holds true till
         // there is character in a string
-        while ((st = br.readLine()) != null)
- 
-            // Print the string
+
+        for(int i=0;i<4;i++)
+        {
+            st = br.readLine();
+            scenario_numbers[i] = Integer.parseInt(st);
             System.out.println(st);
+        }
+        
     }
 }
