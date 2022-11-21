@@ -13,11 +13,21 @@ import java.util.Random;
 
 // Main class
 public class Lib {
- 
+    public static int collums,rows,game_difficulty,bomb_number,available_time,mega_bomb;
+    /*
+     * collums:number of collums the board has
+     * rows: number of rows the board has
+     * game_difficulty
+     * bomb_number:number of bombs on the board
+     * available_time
+     * mega_bomb:1 if there is a mega bomb
+     * 
+     */
+
     /*returns 4 item array of text file */
-    private static int[] read_scenario(String string)
+    private static void read_scenario(String string)
     {
-        int scenario_numbers[]=new int[6];
+        //int scenario_numbers[]=new int[6];
 
         // File path is passed as parameter
         String scenario_id_file = new String("./src/SCENARIOS/" + string + ".txt");
@@ -29,17 +39,21 @@ public class Lib {
         // Creating an object of BufferedReader class
         try(Scanner scanner = new Scanner(new File(scenario_id_file))) {
             
-            for (int i =0;i<4;i++)
-            {
-                scenario_numbers[i]=scanner.nextInt();
-            }
+            game_difficulty=scanner.nextInt();
+            bomb_number=scanner.nextInt();
+            available_time=scanner.nextInt();
+            mega_bomb=scanner.nextInt();
+            //for (int i =0;i<4;i++)
+            //{
+            //    scenario_numbers[i]=scanner.nextInt();
+            //}
            
         }
         catch(Exception BufferedReader1)
         {
             System.out.println("InvalidDescriptionException occured while reading "+string+".txt");
         }
-        return scenario_numbers;
+        //return scenario_numbers;
         
     }
     
@@ -70,35 +84,35 @@ public class Lib {
         return scenario_numbers_margins;
     }
     
-    private static void check_scenario(int[] arr4,int[] arr8) throws Exception
+    private static void check_scenario(int[] arr8) throws Exception
     {
         if(!(
-            (arr4[0]==arr8[0])&&
-            (arr4[1]>=arr8[3])&&
-            (arr4[1]<=arr8[4])&&
-            (arr4[2]>=arr8[5])&&
-            (arr4[2]<=arr8[6])&&
-            (arr4[3]==arr8[7])))
+            (game_difficulty==arr8[0])&&
+            (bomb_number>=arr8[3])&&
+            (bomb_number<=arr8[4])&&
+            (available_time>=arr8[5])&&
+            (available_time<=arr8[6])&&
+            (mega_bomb==arr8[7])))
             throw new Exception("InvalidValueException");
             return;
     }
     
     // main driver method
-    public static int[] ReadFile(String string) throws Exception
+    public static void ReadFile(String string) throws Exception
     {
           
-        int scenario_numbers[]=new int[6];
+        //int scenario_numbers[]=new int[6];
         int scenario_numbers_margins[]=new int[8];
 
-        scenario_numbers=read_scenario(string);
+        read_scenario(string);
         scenario_numbers_margins=read_scenario_margins(string);
         
-        check_scenario(scenario_numbers,scenario_numbers_margins);
+        check_scenario(scenario_numbers_margins);
 
         //save margins in scenario_numbers[]
-        scenario_numbers[4]=scenario_numbers_margins[1];
-        scenario_numbers[5]=scenario_numbers_margins[2];
-        return scenario_numbers;
+        collums=scenario_numbers_margins[1];
+        rows=scenario_numbers_margins[2];
+        //return scenario_numbers;
     }
 
     private static void clear_file(String str) throws FileNotFoundException
@@ -136,50 +150,50 @@ public class Lib {
         return arr;
     }
 
-    public static int[] create_bomb_positions(int rows,int collums,int bombs,int mega_bomb) throws FileNotFoundException
+    public static int[] create_bomb_positions() throws FileNotFoundException
     {   
         clear_file("./src/mine.txt");
-
         //save positions x and y for each bomb
         int range=rows*collums;
-        int[] arr=new int[bombs];
+        int[] arr=new int[bomb_number];
 
         //fill arr with -1
-        arr=fill(arr,-1,bombs);
+        arr=fill(arr,-1,bomb_number);
 
         Random random = new Random();
 
         //find positions on 1d graph
-        for(int i=0;i<bombs;i++)
+        for(int i=0;i<bomb_number;i++)
         {
             int x;
             do
             {
                 x = random.nextInt(range);
             }//check if number already exists
-            while(!check_duplicate(arr,x,bombs));
+            while(!check_duplicate(arr,x,bomb_number));
             arr[i]=x;
         }
-        int[] arr2=new int[2*bombs];
-        for(int i=0;i<bombs;i++)
+        int[] bomb_positions=new int[2*bomb_number];
+        for(int i=0;i<bomb_number;i++)
         {
-            
+            //write bomb positions to file mine.txt (as y x megaBomb) and to bomb_positions[] (as y x)
             int x=arr[i]%collums;
             int y=arr[i]/collums;
-            arr2[i]=x;
-            arr2[i+1]=y;
+            bomb_positions[2*i]=y;
+            bomb_positions[2*i+1]=x;
             String str=y+","+x+",";
-            if(i==0) str+="1\n";
+            if(i==0 &&mega_bomb==1) str+="1\n";
             else str+="0\n";
             try {
                 Files.write(
                     Paths.get("./src/mine.txt"),
                      str.getBytes(), StandardOpenOption.APPEND);
             }catch (IOException e) {
+                System.out.println("Error writing on mine.txt");
                 //exception handling left as an exercise for the reader
             }
         }
-        return arr2;
+        return bomb_positions;
     }
 
     //adds 1 to all neighboring positions that are not negative
@@ -202,11 +216,11 @@ public class Lib {
     //insert -1 in the bomb position (into array)
     private static int[] arr_insert_bombs(int[] arr,int[] bomb_array,int collums,int rows)
     {
-        int size=arr.length;
+        int size=bomb_array.length;
         for(int i=0;i<size;i+=2)
         {
             arr[bomb_array[i+1]*collums+bomb_array[i]]=-1;
-            arr=update_near_positions(bomb_array[i+1],bomb_array[i],arr,collums,rows);
+            arr=update_near_positions(bomb_array[i],bomb_array[i+1],arr,collums,rows);
         }
         return arr;
     }
@@ -226,6 +240,17 @@ public class Lib {
         Lib.fill(value_array,0,value_array_len);
         value_array=arr_insert_bombs(value_array,bomb_array,collums,rows);
 
+    }
+    public static void print_board(int[] arr)
+    {
+        for(int i=0;i<rows;i++)
+        {
+            for(int j=0;j<collums;j++)
+            {
+                System.out.print(arr[i*collums+j]+" ");
+            }
+            System.out.print("\n");
+        }
     }
     
 
