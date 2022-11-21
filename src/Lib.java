@@ -82,6 +82,7 @@ public class Lib {
             throw new Exception("InvalidValueException");
             return;
     }
+    
     // main driver method
     public static int[] ReadFile(String string) throws Exception
     {
@@ -176,5 +177,52 @@ public class Lib {
             }
         }
     }
+
+    //adds 1 to all neighboring positions that are not negative
+    private static int[] update_near_positions(int y,int x,int[] arr,int collums,int rows)
+    {
+        int z1=y*collums;
+        int left_p=z1+x-1,right_p=z1+x+1,up_p=z1-collums+x,down_p=z1+collums+x;
+        int left_up_p=up_p-1,left_down_p=down_p-1,right_up_p=up_p+1,right_down_p=down_p+1;
+        if((left_p>=0) && (x>=0)) arr[left_p]++;                                    //left update
+        if((right_p>=0) && (x<=collums-1)) arr[right_p]++;                          //right update
+        if((down_p>=0) && (y<=rows-1)) arr[down_p]++;                               //down update
+        if((up_p>=0) && (y>=0)) arr[up_p]++;                                        //up update
+        if((left_up_p>=0) && (x>=0) && (y>=0)) arr[left_up_p]++;                    //left up update
+        if((left_down_p>=0) && (x>=0) && (y<=rows-1)) arr[left_down_p]++;           //left down update
+        if((right_up_p>=0) && (x<=collums-1) && (y>=0)) arr[right_up_p]++;          //right up update 
+        if((right_down_p>=0) && (x<=collums-1) && (y<=rows-1)) arr[right_down_p]++; //right down update
+        return arr;
+    }
+
+    //insert -1 in the bomb position (into array)
+    private static int[] arr_insert_bombs(int[] arr,int[] bomb_array,int collums,int rows)
+    {
+        int size=arr.length;
+        for(int i=0;i<size;i+=2)
+        {
+            arr[bomb_array[i+1]*collums+bomb_array[i]]=-1;
+            arr=update_near_positions(bomb_array[i+1],bomb_array[i],arr,collums,rows);
+        }
+        return arr;
+    }
+
+    /*
+    creates the array or "board" that stores
+    -2 for mega bomb
+    -1 for bomb
+    and n >=0 for touching n bombs
+    */ 
+    public static void board_creator(int[] bomb_array,int collums,int rows)
+    {
+        int value_array_len=rows*collums;
+        //create the "board"
+        int[] value_array=new int[value_array_len];
+        //fill aray with zeros=touching 0 bombs
+        Lib.fill(value_array,0,value_array_len);
+        value_array=arr_insert_bombs(value_array,bomb_array,collums,rows);
+
+    }
+    
 
 }
