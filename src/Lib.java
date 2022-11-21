@@ -136,7 +136,7 @@ public class Lib {
         return arr;
     }
 
-    public static void create_bomb_positions(int rows,int collums,int bombs,int mega_bomb) throws FileNotFoundException
+    public static int[] create_bomb_positions(int rows,int collums,int bombs,int mega_bomb) throws FileNotFoundException
     {   
         clear_file("./src/mine.txt");
 
@@ -160,11 +160,14 @@ public class Lib {
             while(!check_duplicate(arr,x,bombs));
             arr[i]=x;
         }
+        int[] arr2=new int[2*bombs];
         for(int i=0;i<bombs;i++)
         {
             
             int x=arr[i]%collums;
             int y=arr[i]/collums;
+            arr2[i]=x;
+            arr2[i+1]=y;
             String str=y+","+x+",";
             if(i==0) str+="1\n";
             else str+="0\n";
@@ -176,6 +179,7 @@ public class Lib {
                 //exception handling left as an exercise for the reader
             }
         }
+        return arr2;
     }
 
     //adds 1 to all neighboring positions that are not negative
