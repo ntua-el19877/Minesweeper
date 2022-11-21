@@ -14,6 +14,7 @@ import java.util.Random;
 // Main class
 public class Lib {
     public static int collums,rows,game_difficulty,bomb_number,available_time,mega_bomb;
+    public static int board_len,bomb_array_len;
     /*
      * collums:number of collums the board has
      * rows: number of rows the board has
@@ -197,32 +198,35 @@ public class Lib {
     }
 
     //adds 1 to all neighboring positions that are not negative
-    private static int[] update_near_positions(int y,int x,int[] arr,int collums,int rows)
+    private static int[] update_near_positions(int y,int x,int[] board)
     {
         int z1=y*collums;
         int left_p=z1+x-1,right_p=z1+x+1,up_p=z1-collums+x,down_p=z1+collums+x;
         int left_up_p=up_p-1,left_down_p=down_p-1,right_up_p=up_p+1,right_down_p=down_p+1;
-        if((left_p>=0) && (x>=0)) arr[left_p]++;                                    //left update
-        if((right_p>=0) && (x<=collums-1)) arr[right_p]++;                          //right update
-        if((down_p>=0) && (y<=rows-1)) arr[down_p]++;                               //down update
-        if((up_p>=0) && (y>=0)) arr[up_p]++;                                        //up update
-        if((left_up_p>=0) && (x>=0) && (y>=0)) arr[left_up_p]++;                    //left up update
-        if((left_down_p>=0) && (x>=0) && (y<=rows-1)) arr[left_down_p]++;           //left down update
-        if((right_up_p>=0) && (x<=collums-1) && (y>=0)) arr[right_up_p]++;          //right up update 
-        if((right_down_p>=0) && (x<=collums-1) && (y<=rows-1)) arr[right_down_p]++; //right down update
-        return arr;
+        //System.out.println("Position "+(y*collums+x));
+        if((x>0)&&(board[left_p]>=0) ) {board[left_p]++;}                                    //left update
+        if((x<collums-1)&&(board[right_p]>=0) ) {board[right_p]++;}                          //right update
+        if((y<rows-1)&&(board[down_p]>=0) ) {board[down_p]++;}                               //down update
+        if((y>0)&&(board[up_p]>=0) ) {board[up_p]++;}                                        //up update
+        if((x>0) && (y>0)&&(board[left_up_p]>=0) ) {board[left_up_p]++;;}                    //left up update
+        if((x>0) && (y<rows-1)&&(board[left_down_p]>=0) ) {board[left_down_p]++;}           //left down update
+        if((x<collums-1) && (y>0)&&(board[right_up_p]>=0) ) {board[right_up_p]++;}          //right up update 
+        if((x<collums-1) && (y<rows-1)&&(board[right_down_p]>=0) ) {board[right_down_p]++;} //right down update
+        return board;
     }
 
     //insert -1 in the bomb position (into array)
-    private static int[] arr_insert_bombs(int[] arr,int[] bomb_array,int collums,int rows)
+    //add 1 to all positive neighboring positions 
+    private static int[] arr_insert_bombs(int[] board,int[] bomb_array)
     {
-        int size=bomb_array.length;
-        for(int i=0;i<size;i+=2)
+        bomb_array_len=bomb_array.length;
+        for(int i=0;i<bomb_array_len;i+=2)
         {
-            arr[bomb_array[i+1]*collums+bomb_array[i]]=-1;
-            arr=update_near_positions(bomb_array[i],bomb_array[i+1],arr,collums,rows);
+            board[bomb_array[i]*collums+bomb_array[i+1]]=-1;
+            //System.out.println(bomb_array[i+1]*collums+bomb_array[i]);
+            board=update_near_positions(bomb_array[i],bomb_array[i+1],board);         //position i is y and position i+1 is x
         }
-        return arr;
+        return board;
     }
 
     /*
@@ -231,23 +235,25 @@ public class Lib {
     -1 for bomb
     and n >=0 for touching n bombs
     */ 
-    public static void board_creator(int[] bomb_array,int collums,int rows)
+    public static int[] board_creator(int[] bomb_array)
     {
-        int value_array_len=rows*collums;
+        board_len=rows*collums;
         //create the "board"
-        int[] value_array=new int[value_array_len];
-        //fill aray with zeros=touching 0 bombs
-        Lib.fill(value_array,0,value_array_len);
-        value_array=arr_insert_bombs(value_array,bomb_array,collums,rows);
-
+        int[] board=new int[board_len];
+        //fill board with zeros(zero=touching 0 bombs)
+        Lib.fill(board,0,board_len);
+        //System.out.println("BoardLen:"+board_len);
+        board=arr_insert_bombs(board,bomb_array);
+        return board;
     }
-    public static void print_board(int[] arr)
+    public static void print_board(int[] board)
     {
         for(int i=0;i<rows;i++)
         {
             for(int j=0;j<collums;j++)
             {
-                System.out.print(arr[i*collums+j]+" ");
+                if(board[i*collums+j]<0)System.out.print(board[i*collums+j]+" ");
+                else System.out.print(" "+board[i*collums+j]+" ");
             }
             System.out.print("\n");
         }
