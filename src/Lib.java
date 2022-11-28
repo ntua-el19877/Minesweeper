@@ -15,6 +15,7 @@ import java.util.Random;
 public class Lib {
     public static int collums,rows,game_difficulty,bomb_number,available_time,mega_bomb;
     public static int board_len,bomb_array_len;
+    public static int board[]=new int[collums*rows];
     /*
      * collums:number of collums the board has
      * rows: number of rows the board has
@@ -154,16 +155,16 @@ public class Lib {
 
     public static int[] create_bomb_positions() throws FileNotFoundException
     {   
+        //clear file i want to write in
         clear_file("./src/mine.txt");
-        //save positions x and y for each bomb
         int range=rows*collums;
+        //save positions y*collums+x for each bomb in arr
         int[] arr=new int[bomb_number];
-
         //fill arr with -1
         arr=fill(arr,-1,bomb_number);
 
         Random random = new Random();
-
+        
         //find positions on 1d graph
         for(int i=0;i<bomb_number;i++)
         {
@@ -175,6 +176,7 @@ public class Lib {
             while(!check_duplicate(arr,x,bomb_number));
             arr[i]=x;
         }
+        //bomb_positions hold th position of each bomb with y and x (2d)
         int[] bomb_positions=new int[2*bomb_number];
         for(int i=0;i<bomb_number;i++)
         {
@@ -223,7 +225,8 @@ public class Lib {
         bomb_array_len=bomb_array.length;
         for(int i=0;i<bomb_array_len;i+=2)
         {
-            board[bomb_array[i]*collums+bomb_array[i+1]]=-1;
+            if(i==0) board[bomb_array[i]*collums+bomb_array[i+1]]=-2;
+            else board[bomb_array[i]*collums+bomb_array[i+1]]=-1;
             //System.out.println(bomb_array[i+1]*collums+bomb_array[i]);
             board=update_near_positions(bomb_array[i],bomb_array[i+1],board);         //position i is y and position i+1 is x
         }
