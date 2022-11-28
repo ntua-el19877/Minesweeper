@@ -67,6 +67,48 @@ public final class LibFX extends Application
             vBox.getChildren().addAll(boardHBox[i]);
         }
     }
+
+    private static void clicked_position(int i)
+    {
+        if(Lib.board[i]==0)
+        {
+            //update positions up under left right and the corners
+        }
+    }
+
+    private static void check_for_clicks(int i)
+    {
+        boardRectangle[i].setOnMouseClicked(event ->
+        {        
+            if (event.getButton()==MouseButton.PRIMARY)
+            {
+                boardRectangle[i].setFill(new ImagePattern(new Image("./icons/"+Lib.board[i]+".png")));
+                //check what to do since we clicked on position
+                clicked_position(i);
+                return;
+            }
+            if ((event.getButton()==MouseButton.SECONDARY))
+            {
+                boardRectangle[i].setFill(new ImagePattern(new Image("./icons/flag.png")));
+                first_left_click(i);
+            }
+        } );
+            
+    }
+
+    private static void first_left_click(int i)
+    {
+        boardRectangle[i].setOnMouseClicked(event ->
+        {
+            if (event.getButton()==MouseButton.SECONDARY)
+            {
+                boardRectangle[i].setFill(new ImagePattern(new Image("./icons/empty.png")));
+                check_for_clicks(i);
+            }
+        });
+    }
+
+    //checks which positions we click
     private static void check_for_clicks()
     {
         for(int i=0;i<Lib.board_len;i++)
@@ -74,9 +116,18 @@ public final class LibFX extends Application
             final Integer I=new Integer(i);
             boardRectangle[i].setOnMouseClicked(event ->
             {
-                if ((event.getButton()==MouseButton.PRIMARY))
+                
+                if (event.getButton()==MouseButton.PRIMARY)
                 {
                     boardRectangle[I].setFill(new ImagePattern(new Image("./icons/"+Lib.board[I]+".png")));
+                    //check what to do since we clicked on position
+                    clicked_position(I);
+                    return;
+                }
+                if ((event.getButton()==MouseButton.SECONDARY))
+                {
+                    boardRectangle[I].setFill(new ImagePattern(new Image("./icons/flag.png")));
+                    first_left_click(I);
                 }
             } );
         }
@@ -99,14 +150,15 @@ public final class LibFX extends Application
             System.out.println("Error initializing stage1");
         }
 
+        //initializes the graphics board
         board_init();
+        //checks which positions we click and update nearby positions
         check_for_clicks();
-        
        // boardRectangle.get(1).setFill(new ImagePattern(new Image("./icons/1.png")));
         root.getChildren().addAll(vBox);
         Medialab_Minesweeper.setFill(Color.web("#d6d6d6"));
         stage1.setScene(Medialab_Minesweeper);
-        
+       
         stage1.show();
         
     }
