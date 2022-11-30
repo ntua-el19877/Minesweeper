@@ -114,6 +114,8 @@ public final class LibFX extends Application
 
     private static void clicked_position(int i)
     {
+        //if position is already uncoverd then do nothing
+        if(Lib.positions_uncovered[i]==1) return;
         if(Lib.board[i]==0)
         {
             //get all positions to change in arr
@@ -128,12 +130,14 @@ public final class LibFX extends Application
         else if(Lib.board[i]==-1)
         {
             //lost the game
-            LibFX.update_position(i,"-1");
+            update_position(i,"-1");
+            Lib.positions_uncovered[i]=1;
         }
         else if(Lib.board[i]==-2)
         {
             //lost the game
-            LibFX.update_position(i,"-2");
+            update_position(i,"-2");
+            Lib.positions_uncovered[i]=1;
         }
         else
         {
@@ -163,6 +167,8 @@ public final class LibFX extends Application
                 }
                 if ((event.getButton()==MouseButton.SECONDARY))
                 {
+                    //if position is already uncoverd then do nothing
+                    if(Lib.positions_uncovered[I]==1) return;
                     boardRectangle[I].setFill(new ImagePattern(new Image("./icons/flag.png")));
                     first_left_click(I);
                 }
