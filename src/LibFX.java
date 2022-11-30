@@ -111,6 +111,17 @@ public final class LibFX extends Application
             }
         });
     }
+    //uncovers all bombs except position
+    private static void uncover_bombs(int position)
+    {
+        int array_len=Lib.bomb_number*2;
+        for(int i=0;i<array_len;i+=2)
+        {
+            int temp=Lib.bomb_positions[i]*Lib.collums+Lib.bomb_positions[i+1];
+            if(temp!=position) boardRectangle[temp].setFill(new ImagePattern(new Image("./icons/"+Lib.board[temp]+".png")));
+                
+        }
+    }
 
     private static void clicked_position(int i)
     {
@@ -132,12 +143,21 @@ public final class LibFX extends Application
             //lost the game
             update_position(i,"red_bomb");
             Lib.positions_uncovered[i]=1;
+            //game over so show all bombs
+            uncover_bombs(i);
+            //cant look under any other spaces
+            Lib.fill(Lib.positions_uncovered,1,Lib.board_len);
+            
         }
         else if(Lib.board[i]==-2)
         {
             //lost the game
             update_position(i,"red_mega_bomb");
             Lib.positions_uncovered[i]=1;
+            //game over so show all bombs
+            uncover_bombs(i);
+            //cant look under any other spaces
+            Lib.fill(Lib.positions_uncovered,1,Lib.board_len);
         }
         else
         {

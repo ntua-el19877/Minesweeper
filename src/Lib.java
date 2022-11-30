@@ -21,6 +21,8 @@ public class Lib {
     public static int[] board;
     //if position is not uncoverd make 0
     public static int[] positions_uncovered;
+    //holds the bomb positions y x 
+    public static int[] bomb_positions;
     /*
      * collums:number of collums the board has
      * rows: number of rows the board has
@@ -182,7 +184,7 @@ public class Lib {
             arr[i]=x;
         }
         //bomb_positions hold th position of each bomb with y and x (2d)
-        int[] bomb_positions=new int[2*bomb_number];
+        bomb_positions=new int[2*bomb_number];
         for(int i=0;i<bomb_number;i++)
         {
             //write bomb positions to file mine.txt (as y x megaBomb) and to bomb_positions[] (as y x)
