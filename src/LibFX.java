@@ -2,6 +2,8 @@ package src;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
+
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -67,14 +69,17 @@ public final class LibFX extends Application
             vBox.getChildren().addAll(boardHBox[i]);
         }
     }
-
-    private static void clicked_position(int i)
+    public static void update_position(int i,String s)
     {
-        if(Lib.board[i]==0)
-        {
-            //update positions up under left right and the corners
-        }
+        boardRectangle[i].setFill(new ImagePattern(new Image("./icons/"+s+".png")));
+        return;
     }
+    public static void update_position(int i,int s)
+    {
+        boardRectangle[i].setFill(new ImagePattern(new Image("./icons/"+s+".png")));
+        return;
+    }
+
 
     private static void check_for_clicks(int i)
     {
@@ -82,7 +87,6 @@ public final class LibFX extends Application
         {        
             if (event.getButton()==MouseButton.PRIMARY)
             {
-                boardRectangle[i].setFill(new ImagePattern(new Image("./icons/"+Lib.board[i]+".png")));
                 //check what to do since we clicked on position
                 clicked_position(i);
                 return;
@@ -106,6 +110,39 @@ public final class LibFX extends Application
                 check_for_clicks(i);
             }
         });
+    }
+
+    private static void clicked_position(int i)
+    {
+        if(Lib.board[i]==0)
+        {
+            //get all positions to change in arr
+            ArrayList<Integer> arr=Lib.get_positions_that_changed(i);
+            for(int k=0;k<arr.size();k++)
+            {
+                //arr.get(k) has position
+                LibFX.update_position(arr.get(k),Lib.board[arr.get(k)]);
+            }
+            
+        }
+        else if(Lib.board[i]==-1)
+        {
+            //lost the game
+            LibFX.update_position(i,"-1");
+        }
+        else if(Lib.board[i]==-2)
+        {
+            //lost the game
+            LibFX.update_position(i,"-2");
+        }
+        else
+        {
+            //System.out.println(" board[i]:"+Lib.board[i]);
+            LibFX.update_position(i,Lib.board[i]);
+            //uncover position
+            Lib.positions_uncovered[i]=1;
+        }
+        
     }
 
     //checks which positions we click
@@ -158,7 +195,9 @@ public final class LibFX extends Application
         root.getChildren().addAll(vBox);
         Medialab_Minesweeper.setFill(Color.web("#d6d6d6"));
         stage1.setScene(Medialab_Minesweeper);
-       
+        // System.out.println(Lib.board[1]);
+        // System.out.println(Lib.board[12]);
+        // System.out.println(Lib.collums);
         stage1.show();
         
     }

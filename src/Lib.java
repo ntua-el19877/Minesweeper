@@ -8,14 +8,19 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Scanner;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
+import java.lang.Object;
 
 // Main class
 public class Lib {
     public static int collums,rows,game_difficulty,bomb_number,available_time,mega_bomb;
     public static int board_len,bomb_array_len;
-    public static int board[]=new int[collums*rows];
+    //board has all values of the different positions
+    public static int[] board;
+    //if position is not uncoverd make 0
+    public static int[] positions_uncovered;
     /*
      * collums:number of collums the board has
      * rows: number of rows the board has
@@ -137,7 +142,7 @@ public class Lib {
     }
 
     //fill array whith number
-    private static int[] fill(int[] arr,int num,int range)
+    public static int[] fill(int[] arr,int num,int range)
     {
         try
         {
@@ -242,8 +247,11 @@ public class Lib {
     public static int[] board_creator(int[] bomb_array)
     {
         board_len=rows*collums;
+        //fill array with 0= coverd
+        positions_uncovered=new int[board_len];
+        Lib.fill(positions_uncovered,0,board_len);
         //create the "board"
-        int[] board=new int[board_len];
+        board=new int[board_len];
         //fill board with zeros(zero=touching 0 bombs)
         Lib.fill(board,0,board_len);
         //System.out.println("BoardLen:"+board_len);
@@ -262,6 +270,91 @@ public class Lib {
             System.out.print("\n");
         }
     }
+    //has to go 
+    public static void clicked_position(int i)
+    {
+        if(Lib.board[i]==0)
+        {
+            //update this one position
+            LibFX.update_position(i,"0");
+            //update positions up under left right and the corners
+            int x=board[i]%collums;
+            int y=board[i]/collums;
+            //System.out.println("i:"+i+" x:"+x+" y:"+y+" board[i]:"+board[i]);
+            if(x>0)
+            {
+                //left is clear
+                clicked_position(i-1);
+                if(y>0)
+                {
+                    //left up is clear
+                    clicked_position((int)(i-1-Lib.collums));
+                }
+                if(y<Lib.rows-1)
+                {
+                    //left down is clear
+                    clicked_position(i-1+Lib.collums);
+                }
+            }
+            if(x<Lib.collums-1)
+            {
+                //right is clear
+                clicked_position(i+1);
+                if(y>0)
+                {
+                    //right up is clear
+                    clicked_position(i+1-Lib.collums);
+                }
+                if(y<Lib.rows-1)
+                {
+                    //right down is clear
+                    clicked_position(i+1+Lib.collums);
+                }
+            }
+            if(y>0)
+            {
+                //up is clear
+                clicked_position(i-Lib.collums);
+            }
+            if(y<Lib.rows-1)
+            {
+                //down is clear
+                clicked_position(i+Lib.collums);
+            }
+            
+        }
+        else if(Lib.board[i]==-1)
+        {
+            //lost the game
+            LibFX.update_position(i,"-1");
+        }
+        else if(Lib.board[i]==-2)
+        {
+            //lost the game
+            LibFX.update_position(i,"-2");
+        }
+        else
+        {
+            LibFX.update_position(i,Lib.board[i]);
+        }
+        
+    }
     
+    public static ArrayList<Integer> get_positions_that_changed(int position)
+    {
+        ArrayList<Integer> arr;
+        //add position to array
+        arr.add(position);
+        if(board[position]==0)
+        {
+            //we have added this position
+            positions_uncovered[position]=1;
+            //update positions up under left right and the corners
+            int x=board[position]%collums;
+            int y=board[position]/collums;
+        }
+        return null;
+    
+    }
 
 }
