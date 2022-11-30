@@ -33,6 +33,7 @@ public class Lib {
      * 
      */
 
+    
     /*returns 4 item array of text file */
     private static void read_scenario(String string)
     {
@@ -403,6 +404,18 @@ public class Lib {
         }
         return (temp_array);
     
+    }
+    public static void startnew() throws Exception
+    {
+        
+      Lib.ReadFile("SCENARIO-1");
+      int[] bomb_positions=new int[2*Lib.bomb_number];        
+      //save bomb positions in file and in arr
+      bomb_positions=Lib.create_bomb_positions(); 
+      
+      Lib.board =Lib.board_creator(bomb_positions);
+      System.out.println(Lib.board[2]);
+      Lib.print_board(Lib.board);
     }
 
 }

@@ -147,6 +147,7 @@ public final class LibFX extends Application
             uncover_bombs(i);
             //cant look under any other spaces
             Lib.fill(Lib.positions_uncovered,1,Lib.board_len);
+            Lib.startnew();
             
         }
         else if(Lib.board[i]==-2)
@@ -190,6 +191,7 @@ public final class LibFX extends Application
                 {
                     //if position is already uncoverd then do nothing
                     if(Lib.positions_uncovered[I]==1) return;
+                    //Lib.board
                     boardRectangle[I].setFill(new ImagePattern(new Image("./icons/flag.png")));
                     first_left_click(I);
                 }
@@ -204,7 +206,6 @@ public final class LibFX extends Application
          *Scenes: Medialab_Minesweeper
          *Groups: root
          */
-        
         try
         {
             stage_init(stage1);
