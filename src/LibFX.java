@@ -118,25 +118,25 @@ public final class LibFX extends Application
         if(Lib.positions_uncovered[i]==1) return;
         if(Lib.board[i]==0)
         {
-            //get all positions to change in arr
-            ArrayList<Integer> arr=Lib.get_positions_that_changed(i);
-            for(int k=0;k<arr.size();k++)
+            //get all positions to change in temp_array
+            ArrayList<Integer> temp_array=Lib.get_positions_that_changed(i);
+            for(int k=0;k<temp_array.size();k++)
             {
                 //arr.get(k) has position
-                LibFX.update_position(arr.get(k),Lib.board[arr.get(k)]);
+                if(temp_array.get(k)>=0)LibFX.update_position(temp_array.get(k),Lib.board[temp_array.get(k)]);
             }
             
         }
         else if(Lib.board[i]==-1)
         {
             //lost the game
-            update_position(i,"-1");
+            update_position(i,"red_bomb");
             Lib.positions_uncovered[i]=1;
         }
         else if(Lib.board[i]==-2)
         {
             //lost the game
-            update_position(i,"-2");
+            update_position(i,"red_mega_bomb");
             Lib.positions_uncovered[i]=1;
         }
         else
@@ -160,6 +160,7 @@ public final class LibFX extends Application
                 
                 if (event.getButton()==MouseButton.PRIMARY)
                 {
+                    if(Lib.positions_uncovered[I]==1) return;
                     boardRectangle[I].setFill(new ImagePattern(new Image("./icons/"+Lib.board[I]+".png")));
                     //check what to do since we clicked on position
                     clicked_position(I);

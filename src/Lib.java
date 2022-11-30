@@ -342,18 +342,64 @@ public class Lib {
     
     public static ArrayList<Integer> get_positions_that_changed(int position)
     {
-        ArrayList<Integer> arr;
+        //check if this positions is already uncoverd
+        ArrayList<Integer> temp_array=new ArrayList<Integer>();
+        if(positions_uncovered[position]==1) 
+        {
+            temp_array.add(-1);
+            return temp_array;
+        }
         //add position to array
-        arr.add(position);
+        temp_array.add(position);
         if(board[position]==0)
         {
             //we have added this position
             positions_uncovered[position]=1;
             //update positions up under left right and the corners
-            int x=board[position]%collums;
-            int y=board[position]/collums;
+            int x=position%collums;
+            int y=position/collums;
+            if(x>0)
+            {
+                //left is clear
+                temp_array.addAll(get_positions_that_changed(position-1));
+                if(y>0)
+                {
+                    //left up is clear
+                    temp_array.addAll(get_positions_that_changed(position-1-collums));
+                }
+                if(y<rows-1)
+                {
+                    //left down is clear
+                    temp_array.addAll(get_positions_that_changed(position-1+collums));
+                }
+            }
+            if(x<collums-1)
+            {
+                //right is clear
+                temp_array.addAll(get_positions_that_changed(position+1));
+                if(y>0)
+                {
+                    //right up is clear
+                    temp_array.addAll(get_positions_that_changed(position+1-collums));
+                }
+                if(y<rows-1)
+                {
+                    //right down is clear
+                    temp_array.addAll(get_positions_that_changed(position+1+collums));
+                }
+            }
+            if(y>0)
+            {
+                //up is clear
+                temp_array.addAll(get_positions_that_changed(position-collums));
+            }
+            if(y<rows-1)
+            {
+                //down is clear
+                temp_array.addAll(get_positions_that_changed(position+collums));
+            }
         }
-        return null;
+        return (temp_array);
     
     }
 
