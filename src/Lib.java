@@ -9,9 +9,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Scanner;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
-import java.lang.Object;
 
 // Main class
 public class Lib {
@@ -273,75 +271,6 @@ public class Lib {
             System.out.print("\n");
         }
     }
-    //has to go 
-    public static void clicked_position(int i)
-    {
-        if(Lib.board[i]==0)
-        {
-            //update this one position
-            LibFX.update_position(i,"0");
-            //update positions up under left right and the corners
-            int x=board[i]%collums;
-            int y=board[i]/collums;
-            //System.out.println("i:"+i+" x:"+x+" y:"+y+" board[i]:"+board[i]);
-            if(x>0)
-            {
-                //left is clear
-                clicked_position(i-1);
-                if(y>0)
-                {
-                    //left up is clear
-                    clicked_position((int)(i-1-Lib.collums));
-                }
-                if(y<Lib.rows-1)
-                {
-                    //left down is clear
-                    clicked_position(i-1+Lib.collums);
-                }
-            }
-            if(x<Lib.collums-1)
-            {
-                //right is clear
-                clicked_position(i+1);
-                if(y>0)
-                {
-                    //right up is clear
-                    clicked_position(i+1-Lib.collums);
-                }
-                if(y<Lib.rows-1)
-                {
-                    //right down is clear
-                    clicked_position(i+1+Lib.collums);
-                }
-            }
-            if(y>0)
-            {
-                //up is clear
-                clicked_position(i-Lib.collums);
-            }
-            if(y<Lib.rows-1)
-            {
-                //down is clear
-                clicked_position(i+Lib.collums);
-            }
-            
-        }
-        else if(Lib.board[i]==-1)
-        {
-            //lost the game
-            LibFX.update_position(i,"-1");
-        }
-        else if(Lib.board[i]==-2)
-        {
-            //lost the game
-            LibFX.update_position(i,"-2");
-        }
-        else
-        {
-            LibFX.update_position(i,Lib.board[i]);
-        }
-        
-    }
     
     public static ArrayList<Integer> get_positions_that_changed(int position)
     {
@@ -409,12 +338,12 @@ public class Lib {
     {
         
       Lib.ReadFile("SCENARIO-1");
-      int[] bomb_positions=new int[2*Lib.bomb_number];        
+      bomb_positions=new int[2*bomb_number];        
       //save bomb positions in file and in arr
-      bomb_positions=Lib.create_bomb_positions(); 
+      create_bomb_positions(); 
       
-      Lib.board =Lib.board_creator(bomb_positions);
-      System.out.println(Lib.board[2]);
+      board =Lib.board_creator(bomb_positions);
+      //System.out.println(Lib.board[2]);
       Lib.print_board(Lib.board);
     }
 
