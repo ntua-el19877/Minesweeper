@@ -188,6 +188,7 @@ public final class LibFX extends Application
                     { 
                         Lib.positions_uncovered[accurate_x_position+i]=1;
                         boardRectangle[accurate_x_position+i].setFill(new ImagePattern(new Image("./icons/sure_flag.png")));
+                        Lib.board[accurate_x_position+i]-=20;
                     }
                 }
             }
@@ -207,6 +208,7 @@ public final class LibFX extends Application
                     { 
                         Lib.positions_uncovered[i]=1;
                         boardRectangle[i].setFill(new ImagePattern(new Image("./icons/sure_flag.png")));
+                        Lib.board[i]-=20;
                     }
                 }
             }
@@ -299,7 +301,7 @@ public final class LibFX extends Application
     private static void info_rect_addition()
     {
         
-        Rectangle info_rect=new Rectangle(width1,height_info_menu);
+        Rectangle info_rect=new Rectangle(width1-20,height_info_menu);
         //info_rect.setHeight(height_info_menu);
         info_rect.setFill(Color.RED);
         vBox.getChildren().addAll(info_rect);
