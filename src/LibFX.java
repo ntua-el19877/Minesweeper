@@ -112,10 +112,12 @@ public final class LibFX extends Application
     //first click happened and waiting for a second one
     private static void first_left_click(int i)
     {
+        
         boardRectangle[i].setOnMouseClicked(event ->
         {
             if (event.getButton()==MouseButton.SECONDARY)
             {
+                if(Lib.positions_uncovered[i]==1) return;
                 counter++;
                 //add 20 since the flag is not there anymore
                 Lib.board[i]+=20;
@@ -125,18 +127,6 @@ public final class LibFX extends Application
         });
     }
 
-    // //uncovers all bombs except position
-    // private static void uncover_bombs(int position)
-    // {
-    //     int array_len=Lib.bomb_number*2;
-    //     for(int i=0;i<array_len;i+=2)
-    //     {
-    //         int temp=Lib.bomb_positions[i]*Lib.collums+Lib.bomb_positions[i+1];
-    //         //the positions with a flag are not uncovered
-    //         if(temp!=position && Lib.board[temp]>-3) boardRectangle[temp].setFill(new ImagePattern(new Image("./icons/"+Lib.board[temp]+".png")));
-                
-    //     }
-    // }
 
     //uncovers all bombs except position
     private static void uncover_bombs(int position)
@@ -222,21 +212,50 @@ public final class LibFX extends Application
         if(Lib.mega_bomb==0) return;
         if(counter>4) return;
         if(Lib.board[position]!=-2) return;
+
+        Lib.positions_uncovered[position]=1;
+        boardRectangle[position].setFill(new ImagePattern(new Image("./icons/mega_bomb_flag.png")));
         //declares row
         int start_position_x=position/Lib.collums;
-        int start_position_y=0;
         int accurate_x_position=start_position_x*Lib.collums;
         for(int i=0;i<Lib.collums;i++)
         {
-            if(Lib.board[accurate_x_position+i]>=0)
+            //System.out.println("Problem:"+accurate_x_position+i);
+            if(Lib.positions_uncovered[accurate_x_position+i]==0)
             {
-                clicked_position(accurate_x_position+i);
+                if(Lib.board[accurate_x_position+i]>=0)
+                {
+                    clicked_position(accurate_x_position+i);
+                }
+                else
+                {
+                    if(accurate_x_position+i!=position)
+                    { 
+                        Lib.positions_uncovered[accurate_x_position+i]=1;
+                        boardRectangle[accurate_x_position+i].setFill(new ImagePattern(new Image("./icons/sure_flag.png")));
+                    }
+                }
             }
-            else
+        }
+        for(int i=position%Lib.collums;i<Lib.board_len;i+=Lib.collums)
+        {
+            //System.out.println("Problem:"+i);
+            if(Lib.positions_uncovered[i]==0)
             {
-                Lib.positions_uncovered[accurate_x_position+i]=1;
-                boardRectangle[accurate_x_position+i].setFill(new ImagePattern(new Image("./icons/sure_flag.png")));
+                if(Lib.board[i]>=0)
+                {
+                    clicked_position(i);
+                }
+                else
+                {
+                    if(i!=position)
+                    { 
+                        Lib.positions_uncovered[i]=1;
+                        boardRectangle[i].setFill(new ImagePattern(new Image("./icons/sure_flag.png")));
+                    }
+                }
             }
+
         }
     }
 
@@ -265,23 +284,48 @@ public final class LibFX extends Application
                 }
                 if ((event.getButton()==MouseButton.SECONDARY))
                 {
-                    //if position is already uncoverd then do nothing
-                    if(Lib.positions_uncovered[I]==1) return;
-                    counter++;
-                    //check if this one is a megabomb and uncover if counter<5
-                    try {
-                        check_if_mega_bomb(I);
-                    } catch (Exception e) {
-                        // TODO Auto-generated catch block
-                        System.out.println("Exception thrown with mega bomb");
-                    }
+                    //if there is no flag
+                    if(Lib.board[I]>-10)
+                    { 
+                        //if position is already uncoverd then do nothing
+                        if(Lib.positions_uncovered[I]==1) return;  
+                        boardRectangle[I].setFill(new ImagePattern(new Image("./icons/flag.png")));
+                        counter++;
+                        //check if this one is a megabomb and uncover if counter<5
+                        try {
+                            check_if_mega_bomb(I);
+                        } catch (Exception e) {
+                            // TODO Auto-generated catch block
+                            System.out.println("Exception thrown with mega bomb");
+                        }
 
-                    //the positions with flags have value-20 to be distinguished from the other numbers when game ends
-                    Lib.board[I]-=20;
-                    boardRectangle[I].setFill(new ImagePattern(new Image("./icons/flag.png")));
-                    first_left_click(I);
+                        //the positions with flags have value-20 to be distinguished from the other numbers when game ends
+                        Lib.board[I]-=20;
+                    }
+                    else
+                    {     
+                        if(Lib.positions_uncovered[I]==1) return;
+                        counter++;
+                        //add 20 since the flag is not there anymore
+                        Lib.board[I]+=20;
+                        boardRectangle[I].setFill(new ImagePattern(new Image("./icons/empty.png")));
+                        check_for_clicks(I);
+                    }
                 }
             } );
+        }
+    }
+
+    
+    //must be deleted
+    private static void find_mega()
+    {
+        for(int i=0;i<Lib.board_len;i++)
+        {
+            if(Lib.board[i]==-2)
+            {
+                boardRectangle[i].setFill(new ImagePattern(new Image("./icons/-2.png")));
+            }
         }
     }
     
@@ -291,7 +335,6 @@ public final class LibFX extends Application
         {
             boardRectangle[i].setFill(new ImagePattern(new Image("./icons/empty.png")));
         }
-
     }
 
     //rectangel that has the timers bombs etc
@@ -309,6 +352,7 @@ public final class LibFX extends Application
                 { 
                     try {
                         Lib.startnew();
+                        find_mega();
                     } catch (Exception e) {
                         // TODO Auto-generated catch block
                         System.out.println("Exception thrown when creating new game");
@@ -316,7 +360,6 @@ public final class LibFX extends Application
                 }
             } );
     }
-
     @Override
     public void start(Stage arg0) throws Exception 
     {
@@ -337,6 +380,8 @@ public final class LibFX extends Application
         board_init();
         //checks which positions we click and update nearby positions
         check_for_clicks();
+
+        find_mega();
        // boardRectangle.get(1).setFill(new ImagePattern(new Image("./icons/1.png")));
         root.getChildren().addAll(vBox);
         Medialab_Minesweeper.setFill(Color.web("#d6d6d6"));

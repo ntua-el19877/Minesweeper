@@ -346,7 +346,7 @@ public class Lib {
         LibFX.counter=0;
         board =Lib.board_creator(bomb_positions);
         //System.out.println(Lib.board[2]);
-        Lib.print_board(Lib.board);
+        //Lib.print_board(Lib.board);
     }
 
 }
