@@ -4,11 +4,21 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
@@ -32,9 +42,6 @@ public final class LibFX extends Application
     private final Stage stage1 = new Stage();
 
     private final static Group root = new Group();
-    private final Group node_Game=new Group();
-    private final Group node_Game_Info=new Group();
-    private final Group node_Menu=new Group();
 
     private final Scene Medialab_Minesweeper=new Scene(root_vBox);
     public static int counter=0;
@@ -56,7 +63,7 @@ public final class LibFX extends Application
     }
 
     //init board of collums*rows blocks
-    private static VBox board_init()
+    private static VBox node_Game()
     {
         
         HBox[] boardHBox = new HBox[Lib.rows];
@@ -309,13 +316,43 @@ public final class LibFX extends Application
         }
     }
 
+    private static Node node_Menu()
+    {
+        HBox hbox_menu=new HBox();
+        
+        MenuBar menubar_Application=new MenuBar();
+        Menu menu = new Menu("Application");
+MenuItem menuitem_Start = new MenuItem("Start");
+MenuItem menuitem_Load = new MenuItem("Load");
+MenuItem menuitem_Create = new MenuItem("Create");
+
+menu.getItems().add(menuitem_Start);
+menu.getItems().add(menuitem_Load);
+menu.getItems().add(menuitem_Create);
+menubar_Application.getMenus().add(menu);
+menu.setStyle("-fx-background-color: #d6d6d6; ");
+menuitem_Create.setStyle("-fx-background-color: #d6d6d6; ");
+menuitem_Load.setStyle("-fx-background-color: #d6d6d6; ");
+menuitem_Start.setStyle("-fx-background-color: #d6d6d6; ");
+
+
+       // Button button_Application=new Button("Application");
+        Button button_Details=new Button("Details");
+        menubar_Application.setStyle("-fx-background-color: #d6d6d6; ");
+        button_Details.setStyle("-fx-background-color: #d6d6d6; ");
+        hbox_menu.getChildren().addAll(menubar_Application);
+        hbox_menu.getChildren().addAll(button_Details);
+        return hbox_menu;
+
+    }
+
+
     //rectangel that has the timers bombs etc
-    private static Rectangle info_rect_addition()
+    private static Rectangle node_Game_Info()
     {
         Rectangle info_rect=new Rectangle(width1-20,height_info_menu);
         //info_rect.setHeight(height_info_menu);
         info_rect.setFill(Color.RED);
-        root_vBox.getChildren().addAll(info_rect);
         info_rect.setOnMouseClicked(event ->
             {
                 refresh_board();
@@ -347,12 +384,21 @@ public final class LibFX extends Application
         {
             System.out.println("Error initializing stage1");
         }
-        info_rect_addition();
+
+        root_vBox.setPadding(new Insets(10));
+
+
+
+
+        root_vBox.getChildren().addAll(node_Menu());
+        root_vBox.getChildren().addAll(node_Game_Info());
         //initializes the graphics board
-        root_vBox.getChildren().addAll(board_init());
+        root_vBox.getChildren().addAll(node_Game());
+        
+        root_vBox.setStyle("-fx-background-color: #d6d6d6;");
         //checks which positions we click and update nearby positions
         check_for_clicks();
-
+        
         find_mega();
     //    // boardRectangle.get(1).setFill(new ImagePattern(new Image("./icons/1.png")));
     //     root.getChildren().addAll(root_vBox);
