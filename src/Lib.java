@@ -277,6 +277,8 @@ public class Lib {
     {
         //check if this positions is already uncoverd
         ArrayList<Integer> temp_array=new ArrayList<Integer>();
+        //if there is a flag then remove flag
+        if(board[position]<-10) board[position]+=20;
         if(positions_uncovered[position]==1) 
         {
             temp_array.add(-1);
@@ -346,7 +348,7 @@ public class Lib {
         LibFX.counter=0;
         board =Lib.board_creator(bomb_positions);
         //System.out.println(Lib.board[2]);
-        //Lib.print_board(Lib.board);
+        Lib.print_board(Lib.board);
     }
 
 }

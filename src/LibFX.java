@@ -113,6 +113,8 @@ public final class LibFX extends Application
     {
         //if position is already uncoverd then do nothing
         if(Lib.positions_uncovered[i]==1) return;
+        //if there is a flag then remove flag
+        if(Lib.board[i]<-10) Lib.board[i]+=20;
         if(Lib.board[i]==0)
         {
             //get all positions to change in temp_array
@@ -134,9 +136,7 @@ public final class LibFX extends Application
             uncover_bombs(i);
             //cant look under any other spaces
             Lib.fill(Lib.positions_uncovered,1,Lib.board_len);
-            //game ended start new
-           // refresh_board();
-            //Lib.startnew();
+            
             
         }
         else if(Lib.board[i]==-2)
@@ -148,9 +148,6 @@ public final class LibFX extends Application
             uncover_bombs(i);
             //cant look under any other spaces
             Lib.fill(Lib.positions_uncovered,1,Lib.board_len);
-            //game ended start new
-            //refresh_board();
-            //Lib.startnew();
         }
         else
         {
@@ -175,7 +172,6 @@ public final class LibFX extends Application
         int accurate_x_position=start_position_x*Lib.collums;
         for(int i=0;i<Lib.collums;i++)
         {
-            //System.out.println("Problem:"+accurate_x_position+i);
             if(Lib.positions_uncovered[accurate_x_position+i]==0)
             {
                 if(Lib.board[accurate_x_position+i]>=0)
