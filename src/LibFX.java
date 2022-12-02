@@ -83,51 +83,6 @@ public final class LibFX extends Application
         return;
     }
 
-    //check if a box is clicked
-    private static void check_for_clicks(int i)
-    {
-        boardRectangle[i].setOnMouseClicked(event ->
-        {        
-            if (event.getButton()==MouseButton.PRIMARY)
-            {
-                //check what to do since we clicked on position
-                try {
-                    clicked_position(i);
-                } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    System.out.println("Exception thrown when checking for left click");
-                }
-                return;
-            }
-            if ((event.getButton()==MouseButton.SECONDARY))
-            {
-                counter++;
-                boardRectangle[i].setFill(new ImagePattern(new Image("./icons/flag.png")));
-                first_left_click(i);
-            }
-        } );
-            
-    }
-
-    //first click happened and waiting for a second one
-    private static void first_left_click(int i)
-    {
-        
-        boardRectangle[i].setOnMouseClicked(event ->
-        {
-            if (event.getButton()==MouseButton.SECONDARY)
-            {
-                if(Lib.positions_uncovered[i]==1) return;
-                counter++;
-                //add 20 since the flag is not there anymore
-                Lib.board[i]+=20;
-                boardRectangle[i].setFill(new ImagePattern(new Image("./icons/empty.png")));
-                check_for_clicks(i);
-            }
-        });
-    }
-
-
     //uncovers all bombs except position
     private static void uncover_bombs(int position)
     {
@@ -166,7 +121,7 @@ public final class LibFX extends Application
             {
                 
                 //arr.get(k) has position
-                if(temp_array.get(k)>=0)LibFX.update_position(temp_array.get(k),Lib.board[temp_array.get(k)]);
+                if(temp_array.get(k)>=0) update_position(temp_array.get(k),Lib.board[temp_array.get(k)]);
             }
             
         }
@@ -259,7 +214,7 @@ public final class LibFX extends Application
         }
     }
 
-    //checks which positions we click
+    //checks which positions we click and changes image accordingly
     private static void check_for_clicks()
     {
         for(int i=0;i<Lib.board_len;i++)
@@ -270,11 +225,14 @@ public final class LibFX extends Application
                 
                 if (event.getButton()==MouseButton.PRIMARY)
                 {
+                    //skip if position is already uncoverd
                     if(Lib.positions_uncovered[I]==1) return;
+                    if(Lib.board[I]<-10) return;
                     boardRectangle[I].setFill(new ImagePattern(new Image("./icons/"+Lib.board[I]+".png")));
                     //check what to do since we clicked on position
                     try {
                         counter++;
+                        //uncover position I
                         clicked_position(I);
                     } catch (Exception e) {
                         // TODO Auto-generated catch block
@@ -309,7 +267,7 @@ public final class LibFX extends Application
                         //add 20 since the flag is not there anymore
                         Lib.board[I]+=20;
                         boardRectangle[I].setFill(new ImagePattern(new Image("./icons/empty.png")));
-                        check_for_clicks(I);
+                        
                     }
                 }
             } );
