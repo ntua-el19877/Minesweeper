@@ -1,5 +1,7 @@
 package src;
 
+import java.io.IOException;
+import java.lang.System.Logger.Level;
 
 /*
  * Angelos Loukas
@@ -10,6 +12,15 @@ package src;
 
 public class Minesweeper {
 
+//    public static void openFileLocation(String path) {
+//       if (InfoTool.osName.toLowerCase().contains("win")) {
+//           try {
+//               Runtime.getRuntime().exec("explorer.exe /select," + path);
+//           } catch (IOException ex) {
+//               Main.logger.log(Level.WARNING, ex.getMessage(), ex);
+//           }
+//       }
+//   }
    
    public static void main(String []args) throws Exception {
       /*
