@@ -3,7 +3,6 @@ package src;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -27,12 +26,17 @@ public final class LibFX extends Application
     /*make row*collums array of rectangle photos */
     private final static Rectangle[] boardRectangle = new Rectangle[Lib.rows*Lib.collums];
     /*make array to store each row of Rectangle photos */
-    private final static HBox[] boardHBox = new HBox[Lib.rows];
-    private final static VBox vBox=new VBox(space_between_rectangles);
 
+    
+    private final static VBox root_vBox=new VBox(space_between_rectangles);
     private final Stage stage1 = new Stage();
+
     private final static Group root = new Group();
-    private final Scene Medialab_Minesweeper=new Scene(root);
+    private final Group node_Game=new Group();
+    private final Group node_Game_Info=new Group();
+    private final Group node_Menu=new Group();
+
+    private final Scene Medialab_Minesweeper=new Scene(root_vBox);
     public static int counter=0;
 
 
@@ -52,8 +56,11 @@ public final class LibFX extends Application
     }
 
     //init board of collums*rows blocks
-    private static void board_init()
+    private static VBox board_init()
     {
+        
+        HBox[] boardHBox = new HBox[Lib.rows];
+        VBox vBox=new VBox(space_between_rectangles);
         int num=0;
         // br.setFill(new ImagePattern(new Image("./icons/empty.png")));
         for(int i=0;i<Lib.collums;i++)
@@ -69,6 +76,7 @@ public final class LibFX extends Application
             }
             vBox.getChildren().addAll(boardHBox[i]);
         }
+        return vBox;
     }
 
     public static void update_position(int i,String s)
@@ -218,11 +226,19 @@ public final class LibFX extends Application
         for(int i=0;i<Lib.board_len;i++)
         {
             final int I=i;
-            boardRectangle[i].setOnMouseClicked(event ->
+            boardRectangle[i].setOnMousePressed(event ->
+            {
+                if(Lib.positions_uncovered[I]==1) return;
+                if(Lib.board[I]<-10) return;
+                boardRectangle[I].setFill(new ImagePattern(new Image("./icons/0.png")));
+
+            });
+            boardRectangle[i].setOnMouseReleased(event ->
             {
                 
                 if (event.getButton()==MouseButton.PRIMARY)
                 {
+                    
                     //skip if position is already uncoverd
                     if(Lib.positions_uncovered[I]==1) return;
                     if(Lib.board[I]<-10) return;
@@ -294,13 +310,12 @@ public final class LibFX extends Application
     }
 
     //rectangel that has the timers bombs etc
-    private static void info_rect_addition()
+    private static Rectangle info_rect_addition()
     {
-        
         Rectangle info_rect=new Rectangle(width1-20,height_info_menu);
         //info_rect.setHeight(height_info_menu);
         info_rect.setFill(Color.RED);
-        vBox.getChildren().addAll(info_rect);
+        root_vBox.getChildren().addAll(info_rect);
         info_rect.setOnMouseClicked(event ->
             {
                 refresh_board();
@@ -315,6 +330,7 @@ public final class LibFX extends Application
                     }
                 }
             } );
+        return info_rect;
     }
     @Override
     public void start(Stage arg0) throws Exception 
@@ -333,13 +349,13 @@ public final class LibFX extends Application
         }
         info_rect_addition();
         //initializes the graphics board
-        board_init();
+        root_vBox.getChildren().addAll(board_init());
         //checks which positions we click and update nearby positions
         check_for_clicks();
 
         find_mega();
-       // boardRectangle.get(1).setFill(new ImagePattern(new Image("./icons/1.png")));
-        root.getChildren().addAll(vBox);
+    //    // boardRectangle.get(1).setFill(new ImagePattern(new Image("./icons/1.png")));
+    //     root.getChildren().addAll(root_vBox);
         Medialab_Minesweeper.setFill(Color.web("#d6d6d6"));
         stage1.setScene(Medialab_Minesweeper);
         // System.out.println(Lib.board[1]);
