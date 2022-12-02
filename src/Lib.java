@@ -33,7 +33,7 @@ public class Lib {
 
     
     /*returns 4 item array of text file */
-    private static void read_scenario(String string)
+    private static void read_scenario(String string) throws IOException
     {
         //int scenario_numbers[]=new int[6];
 
@@ -45,6 +45,7 @@ public class Lib {
         // like \test as \t (ie. as a escape sequence)
  
         // Creating an object of BufferedReader class
+        
         try(Scanner scanner = new Scanner(new File(scenario_id_file))) {
             
             game_difficulty=scanner.nextInt();
@@ -283,10 +284,11 @@ public class Lib {
         }
         //add position to array
         temp_array.add(position);
+        
+        //we have added this position
+        positions_uncovered[position]=1;
         if(board[position]==0)
         {
-            //we have added this position
-            positions_uncovered[position]=1;
             //update positions up under left right and the corners
             int x=position%collums;
             int y=position/collums;
@@ -337,14 +339,14 @@ public class Lib {
     public static void startnew() throws Exception
     {
         
-      Lib.ReadFile("SCENARIO-1");
-      bomb_positions=new int[2*bomb_number];        
-      //save bomb positions in file and in arr
-      create_bomb_positions(); 
-      
-      board =Lib.board_creator(bomb_positions);
-      //System.out.println(Lib.board[2]);
-      Lib.print_board(Lib.board);
+        Lib.ReadFile("SCENARIO-1");
+        bomb_positions=new int[2*bomb_number];        
+        //save bomb positions in file and in arr
+        create_bomb_positions(); 
+        LibFX.counter=0;
+        board =Lib.board_creator(bomb_positions);
+        //System.out.println(Lib.board[2]);
+        Lib.print_board(Lib.board);
     }
 
 }

@@ -33,6 +33,7 @@ public final class LibFX extends Application
     private final Stage stage1 = new Stage();
     private final static Group root = new Group();
     private final Scene Medialab_Minesweeper=new Scene(root);
+    public static int counter=0;
 
 
     public static void main(String[] args)
@@ -43,8 +44,6 @@ public final class LibFX extends Application
     private static void stage_init(final Stage stage) throws MalformedURLException
     {
         stage.setTitle("Minesweeper");
-        stage.setWidth(width1);
-        stage.setHeight(heigth1);
         stage.setResizable(false);
         /*minesweeper icon */
         Image minesweeper_icon=new Image(new File(
@@ -102,6 +101,7 @@ public final class LibFX extends Application
             }
             if ((event.getButton()==MouseButton.SECONDARY))
             {
+                counter++;
                 boardRectangle[i].setFill(new ImagePattern(new Image("./icons/flag.png")));
                 first_left_click(i);
             }
@@ -116,6 +116,7 @@ public final class LibFX extends Application
         {
             if (event.getButton()==MouseButton.SECONDARY)
             {
+                counter++;
                 //add 20 since the flag is not there anymore
                 Lib.board[i]+=20;
                 boardRectangle[i].setFill(new ImagePattern(new Image("./icons/empty.png")));
@@ -173,6 +174,7 @@ public final class LibFX extends Application
             ArrayList<Integer> temp_array=Lib.get_positions_that_changed(i);
             for(int k=0;k<temp_array.size();k++)
             {
+                
                 //arr.get(k) has position
                 if(temp_array.get(k)>=0)LibFX.update_position(temp_array.get(k),Lib.board[temp_array.get(k)]);
             }
@@ -215,6 +217,29 @@ public final class LibFX extends Application
         
     }
 
+    private static void check_if_mega_bomb(int position) throws Exception
+    {
+        if(Lib.mega_bomb==0) return;
+        if(counter>4) return;
+        if(Lib.board[position]!=-2) return;
+        //declares row
+        int start_position_x=position/Lib.collums;
+        int start_position_y=0;
+        int accurate_x_position=start_position_x*Lib.collums;
+        for(int i=0;i<Lib.collums;i++)
+        {
+            if(Lib.board[accurate_x_position+i]>=0)
+            {
+                clicked_position(accurate_x_position+i);
+            }
+            else
+            {
+                Lib.positions_uncovered[accurate_x_position+i]=1;
+                boardRectangle[accurate_x_position+i].setFill(new ImagePattern(new Image("./icons/sure_flag.png")));
+            }
+        }
+    }
+
     //checks which positions we click
     private static void check_for_clicks()
     {
@@ -230,6 +255,7 @@ public final class LibFX extends Application
                     boardRectangle[I].setFill(new ImagePattern(new Image("./icons/"+Lib.board[I]+".png")));
                     //check what to do since we clicked on position
                     try {
+                        counter++;
                         clicked_position(I);
                     } catch (Exception e) {
                         // TODO Auto-generated catch block
@@ -241,6 +267,15 @@ public final class LibFX extends Application
                 {
                     //if position is already uncoverd then do nothing
                     if(Lib.positions_uncovered[I]==1) return;
+                    counter++;
+                    //check if this one is a megabomb and uncover if counter<5
+                    try {
+                        check_if_mega_bomb(I);
+                    } catch (Exception e) {
+                        // TODO Auto-generated catch block
+                        System.out.println("Exception thrown with mega bomb");
+                    }
+
                     //the positions with flags have value-20 to be distinguished from the other numbers when game ends
                     Lib.board[I]-=20;
                     boardRectangle[I].setFill(new ImagePattern(new Image("./icons/flag.png")));
@@ -259,6 +294,7 @@ public final class LibFX extends Application
 
     }
 
+    //rectangel that has the timers bombs etc
     private static void info_rect_addition()
     {
         
