@@ -21,7 +21,7 @@ public class Minesweeper {
 //           }
 //       }
 //   }
-   
+   public static String scenario=null;
    public static void main(String []args) throws Exception {
       /*
        * scenario_info[0]=mode
@@ -33,7 +33,7 @@ public class Minesweeper {
        * 
        */
       //int scenario_info[]=new int[6];
-      Lib.startnew();
+      Lib.startnew(scenario);
       LibFX.main(args);
 
 

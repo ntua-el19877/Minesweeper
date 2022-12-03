@@ -232,7 +232,7 @@ public class Lib {
         bomb_array_len=bomb_array.length;
         for(int i=0;i<bomb_array_len;i+=2)
         {
-            if(i==0) board[bomb_array[i]*collums+bomb_array[i+1]]=-2;
+            if(i==0&&mega_bomb==1) board[bomb_array[i]*collums+bomb_array[i+1]]=-2;
             else board[bomb_array[i]*collums+bomb_array[i+1]]=-1;
             //System.out.println(bomb_array[i+1]*collums+bomb_array[i]);
             board=update_near_positions(bomb_array[i],bomb_array[i+1],board);         //position i is y and position i+1 is x
@@ -338,10 +338,10 @@ public class Lib {
         return (temp_array);
     
     }
-    public static void startnew() throws Exception
+    public static void startnew(String scenario) throws Exception
     {
-        
-        Lib.ReadFile("SCENARIO-1");
+        if(Minesweeper.scenario==null) Minesweeper.scenario="SCENARIO-2";
+        Lib.ReadFile(Minesweeper.scenario);
         bomb_positions=new int[2*bomb_number];        
         //save bomb positions in file and in arr
         create_bomb_positions(); 

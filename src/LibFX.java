@@ -3,7 +3,14 @@ package src;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+
+import org.w3c.dom.events.MouseEvent;
+
 import javafx.application.Application;
+import javafx.beans.property.ObjectProperty;
+import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -295,7 +302,6 @@ public final class LibFX extends Application
         }
     }
 
-    
     //must be deleted
     private static void find_mega()
     {
@@ -316,59 +322,101 @@ public final class LibFX extends Application
         }
     }
 
-    private static Node node_Menu()
+    // private static void handle(Event event)
+    // {}
+    // private static void menuitem_Start_new_game(MenuItem menuitem)
+    // {
+    //     ObjectProperty<MouseEvent e<
+    //     {
+    //         System.out.println("Exception thrown when creating new game");
+    //     }>>;
+
+    //     node.setOnMouseClicked(event ->
+    //         {
+    //             refresh_board();
+    //             if (event.getButton()==MouseButton.PRIMARY)
+    //             { 
+    //                 try {
+    //                     Lib.startnew(Minesweeper.scenario);
+    //                     find_mega();
+    //                 } catch (Exception e) {
+    //                     // TODO Auto-generated catch block
+    //                     System.out.println("Exception thrown when creating new game");
+    //                 }
+    //             }
+    //         } );
+    // }
+
+    private static void menuitem_Start_new_game(MenuItem menuitem)
     {
-        HBox hbox_menu=new HBox();
-        
+        menuitem.setOnAction(new EventHandler<ActionEvent>() {
+        public void handle(ActionEvent t) {
+            refresh_board();
+            try 
+            {
+                Lib.startnew(Minesweeper.scenario);                   
+                find_mega();
+            } 
+            catch (Exception e) 
+            {
+                    // TODO Auto-generated catch block
+                    System.out.println("Exception thrown when creating new game");
+            }
+                
+        }
+    });
+    }
+
+    private static Node menubar_Application()
+    {
         MenuBar menubar_Application=new MenuBar();
         Menu menu = new Menu("Application");
-MenuItem menuitem_Start = new MenuItem("Start");
-MenuItem menuitem_Load = new MenuItem("Load");
-MenuItem menuitem_Create = new MenuItem("Create");
+        MenuItem menuitem_Start = new MenuItem("Start");
+        MenuItem menuitem_Load = new MenuItem("Load");
+        MenuItem menuitem_Create = new MenuItem("Create");
+        menuitem_Start_new_game(menuitem_Start);
 
-menu.getItems().add(menuitem_Start);
-menu.getItems().add(menuitem_Load);
-menu.getItems().add(menuitem_Create);
-menubar_Application.getMenus().add(menu);
-menu.setStyle("-fx-background-color: #d6d6d6; ");
-menuitem_Create.setStyle("-fx-background-color: #d6d6d6; ");
-menuitem_Load.setStyle("-fx-background-color: #d6d6d6; ");
-menuitem_Start.setStyle("-fx-background-color: #d6d6d6; ");
-
-
-       // Button button_Application=new Button("Application");
-        Button button_Details=new Button("Details");
+        menu.getItems().add(menuitem_Start);
+        menu.getItems().add(menuitem_Load);
+        menu.getItems().add(menuitem_Create);
+        menubar_Application.getMenus().add(menu);
+        menu.setStyle("-fx-background-color: #d6d6d6; ");
         menubar_Application.setStyle("-fx-background-color: #d6d6d6; ");
-        button_Details.setStyle("-fx-background-color: #d6d6d6; ");
-        hbox_menu.getChildren().addAll(menubar_Application);
-        hbox_menu.getChildren().addAll(button_Details);
-        return hbox_menu;
-
+        return menubar_Application;
     }
 
-
-    //rectangel that has the timers bombs etc
-    private static Rectangle node_Game_Info()
+    private static Node menubar_Details()
     {
-        Rectangle info_rect=new Rectangle(width1-20,height_info_menu);
-        //info_rect.setHeight(height_info_menu);
-        info_rect.setFill(Color.RED);
-        info_rect.setOnMouseClicked(event ->
-            {
-                refresh_board();
-                if (event.getButton()==MouseButton.PRIMARY)
-                { 
-                    try {
-                        Lib.startnew();
-                        find_mega();
-                    } catch (Exception e) {
-                        // TODO Auto-generated catch block
-                        System.out.println("Exception thrown when creating new game");
-                    }
-                }
-            } );
-        return info_rect;
+        MenuBar menubar_Details=new MenuBar();
+        Menu menu = new Menu("Details");
+        MenuItem menuitem_Start = new MenuItem("Rounds");
+        MenuItem menuitem_Load = new MenuItem("Solution");
+        
+        menu.getItems().add(menuitem_Start);
+        menu.getItems().add(menuitem_Load);
+        menubar_Details.getMenus().add(menu);
+        menu.setStyle("-fx-background-color: #d6d6d6; ");
+        menubar_Details.setStyle("-fx-background-color: #d6d6d6; ");
+        return menubar_Details;
     }
+
+    private static Node node_Menu()
+    {
+        HBox hbox_menu=new HBox(0);
+        hbox_menu.getChildren().addAll(menubar_Application(),menubar_Details());
+        return hbox_menu;
+    }
+
+
+    // //rectangel that has the timers bombs etc
+    // private static Rectangle node_Game_Info()
+    // {
+    //     Rectangle info_rect=new Rectangle(width1-20,height_info_menu);
+    //     //info_rect.setHeight(height_info_menu);
+    //     info_rect.setFill(Color.RED);
+        
+    //     return info_rect;
+    // }
     @Override
     public void start(Stage arg0) throws Exception 
     {
@@ -385,13 +433,13 @@ menuitem_Start.setStyle("-fx-background-color: #d6d6d6; ");
             System.out.println("Error initializing stage1");
         }
 
-        root_vBox.setPadding(new Insets(10));
+        //root_vBox.setPadding(new Insets(10));
 
 
 
 
         root_vBox.getChildren().addAll(node_Menu());
-        root_vBox.getChildren().addAll(node_Game_Info());
+        //root_vBox.getChildren().addAll(node_Game_Info());
         //initializes the graphics board
         root_vBox.getChildren().addAll(node_Game());
         
