@@ -23,6 +23,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
@@ -35,8 +36,9 @@ import javafx.stage.Stage;
 
 public final class LibFX extends Application
 {
+    private static int width_scene_Create_Scenario=300,height_scene_Create_Scenario=400;
     private static int rectangle_size=17;
-    private static Lib lib;
+    //private static Lib lib;
     private static int space_between_rectangles=0;
 
     /*make row*collums array of rectangle photos */
@@ -45,10 +47,10 @@ public final class LibFX extends Application
 
     
     private final static VBox root_vBox=new VBox(space_between_rectangles);
-    private final Stage stage1 = new Stage();
+    private final Stage Medialab_Minesweeper = new Stage();
 
     private static Node node_Game;
-    private final Scene Medialab_Minesweeper=new Scene(root_vBox);
+    private final Scene scene1=new Scene(root_vBox);
     public static int counter=0;
 
 
@@ -237,13 +239,13 @@ public final class LibFX extends Application
     //make all rectangles on node_Game clickable and manage each click acordingly
     public static void check_for_clicks()
     {
-        for(int i=0;i<lib.board_len;i++)
+        for(int i=0;i<Lib.board_len;i++)
         {
             final int I=i;
             boardRectangle[i].setOnMousePressed(event ->
             {
-                if(lib.positions_uncovered[I]==1) return;
-                if(lib.board[I]<-10) return;
+                if(Lib.positions_uncovered[I]==1) return;
+                if(Lib.board[I]<-10) return;
                 boardRectangle[I].setFill(new ImagePattern(new Image("./icons/0.png")));
 
             });
@@ -254,9 +256,9 @@ public final class LibFX extends Application
                 {
                     
                     //skip if position is already uncoverd
-                    if(lib.positions_uncovered[I]==1) return;
-                    if(lib.board[I]<-10) return;
-                    boardRectangle[I].setFill(new ImagePattern(new Image("./icons/"+lib.board[I]+".png")));
+                    if(Lib.positions_uncovered[I]==1) return;
+                    if(Lib.board[I]<-10) return;
+                    boardRectangle[I].setFill(new ImagePattern(new Image("./icons/"+Lib.board[I]+".png")));
                     //check what to do since we clicked on position
                     try {
                         counter++;
@@ -271,10 +273,10 @@ public final class LibFX extends Application
                 if ((event.getButton()==MouseButton.SECONDARY))
                 {
                     //if there is no flag
-                    if(lib.board[I]>-10)
+                    if(Lib.board[I]>-10)
                     { 
                         //if position is already uncoverd then do nothing
-                        if(lib.positions_uncovered[I]==1) return;  
+                        if(Lib.positions_uncovered[I]==1) return;  
                         boardRectangle[I].setFill(new ImagePattern(new Image("./icons/flag.png")));
                         counter++;
                         //check if this one is a megabomb and uncover if counter<5
@@ -286,7 +288,7 @@ public final class LibFX extends Application
                         }
 
                         //the positions with flags have value-20 to be distinguished from the other numbers when game ends
-                        lib.board[I]-=20;
+                        Lib.board[I]-=20;
                     }
                     else
                     {     
@@ -302,7 +304,7 @@ public final class LibFX extends Application
         }
     }
 
-    //must be deleted
+    //must be deleted for devs only
     private static void find_mega()
     {
         for(int i=0;i<Lib.board_len;i++)
@@ -322,7 +324,7 @@ public final class LibFX extends Application
         }
     }
 
-    //create MenuItem:Start to start new game
+    //(Frontend&Backend) refresh board and start a new game 
     private static MenuItem menuitem_Start_new_game()
     {
         MenuItem menuitem=new MenuItem("Start");
@@ -348,15 +350,15 @@ public final class LibFX extends Application
     //(Frontend) init node_Game of collums*rows rectangle blocks
     private static VBox node_Game_init()
     {
-        boardRectangle = new Rectangle[lib.rows*lib.collums];
-        HBox[] boardHBox = new HBox[lib.rows];
+        boardRectangle = new Rectangle[Lib.rows*Lib.collums];
+        HBox[] boardHBox = new HBox[Lib.rows];
         VBox vBox=new VBox(space_between_rectangles);
         int num=0;
         // br.setFill(new ImagePattern(new Image("./icons/empty.png")));
-        for(int i=0;i<lib.collums;i++)
+        for(int i=0;i<Lib.collums;i++)
         {
             boardHBox[i]=new HBox(space_between_rectangles);
-            for(int k=0;k<lib.rows;k++)
+            for(int k=0;k<Lib.rows;k++)
             {
                 /*add 15x15 rectangle Lib.row times in rowRectangle */
                 boardRectangle[num]=new Rectangle(rectangle_size,rectangle_size);
@@ -371,11 +373,11 @@ public final class LibFX extends Application
 
     //(Frontend)removes last node_Game and replaces it 
     //with new node_Game based on the last scenario we chose
-    private static void remove_and_add_node_Game(Stage stage1)
+    private static void remove_and_add_node_Game(Stage Medialab_Minesweeper)
     {
         VBox root_vBox=new VBox();
-        //stage1.getChildren().remove(node_Game);
-        //create new lib
+        //Medialab_Minesweeper.getChildren().remove(node_Game);
+        //create new Lib
         try {
             //(Backend)creates new board based on scenario we chose 
             Lib.startnew(Minesweeper.scenario);
@@ -383,22 +385,23 @@ public final class LibFX extends Application
             // TODO Auto-generated catch block
             System.out.println("Here");
         }
-        root_vBox.getChildren().addAll(node_Menu_init(stage1));
+        root_vBox.getChildren().addAll(node_Menu_init(Medialab_Minesweeper));
         //(Frontend) init node_Game of collums*rows rectangle blocks
         node_Game=node_Game_init();
         root_vBox.getChildren().addAll(node_Game);
         
         check_for_clicks();
+        find_mega();
         Scene scene1=new Scene(root_vBox);
        // Stage stage2=new Stage();
 
-        stage1.setScene(scene1);
-        stage1.show();
+        Medialab_Minesweeper.setScene(scene1);
+        Medialab_Minesweeper.show();
     }
 
     //(Frontend & Backend) init a new scenario if it is clicked
     //add all scenarios in menu_Load from where you can chose one
-    private static MenuItem init_scenario(File file,Stage stage1)
+    private static MenuItem init_scenario(File file,Stage Medialab_Minesweeper)
     {
         //create menuitem and add it to menu_Load
         MenuItem menuitem_scenario=new MenuItem(file.getName());
@@ -411,47 +414,88 @@ public final class LibFX extends Application
                 Minesweeper.scenario=file.getName();
                 //(Frontend)removes last node_Game and replaces it 
                 //with new node_Game based on the last scenario we chose
-                remove_and_add_node_Game(stage1);
+                remove_and_add_node_Game(Medialab_Minesweeper);
             }
         });
         return menuitem_scenario;
     }
 
     //(Frontend) Swows all scenarios and if you click on one then a new game is initialized
-    public static Menu menuitem_Load_New_Game(final File folder,Stage stage1) 
+    public static Menu menuitem_Load_New_Game(final File folder,Stage Medialab_Minesweeper) 
     {
         Menu menu_Load=new Menu("Load");
         //show all files
         for (final File fileEntry : folder.listFiles()) {
             if (fileEntry.isDirectory()) {
-                menuitem_Load_New_Game(fileEntry,stage1);
+                menuitem_Load_New_Game(fileEntry,Medialab_Minesweeper);
             } 
             else 
             {
                 //(Frontend & Backend) init a new scenario if it is clicked
                 //add all scenarios in menu_Load from where you can chose one
-                menu_Load.getItems().add(init_scenario(fileEntry,stage1));
+                menu_Load.getItems().add(init_scenario(fileEntry,Medialab_Minesweeper));
             }
         }
         return menu_Load;
     }
 
+    public static MenuItem menuitem_Create_Game()
+    {
+        MenuItem menuitem_Create=new MenuItem("Create");
+        menuitem_Create.setOnAction(new EventHandler <ActionEvent>()
+        {
+            public void handle(ActionEvent t)
+            {
+                Stage stage_Create_Scenario=new Stage();
+                Group root_Create_Scenario=new Group();
+                Scene scene_Create_Scenario=new Scene(
+                    root_Create_Scenario , width_scene_Create_Scenario , height_scene_Create_Scenario);
+                
+                VBox vbox_temp=new VBox();
+                final TextField textf=new TextField();
+                textf.setPrefColumnCount(10);
+                textf.setPromptText("Scenario Name");
+
+                final TextField textf2=new TextField();
+                textf2.setPrefColumnCount(10);
+                textf2.setPromptText("Scenario Difficulty");
+
+                stage_Create_Scenario.setResizable(false);
+                stage_Create_Scenario.setTitle("Custom Scenario");
+                root_Create_Scenario.getChildren().addAll(textf,textf2);
+                stage_Create_Scenario.setScene(scene_Create_Scenario);
+                stage_Create_Scenario.show();
+            }
+        });
+        return menuitem_Create;
+    }
+
+    private static MenuItem menuitem_Exit()
+    {
+        MenuItem menuitem_Exit=new MenuItem("Exit");
+        menuitem_Exit.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent t)
+            {
+                System.exit(0);
+            }
+        });
+        return menuitem_Exit;
+    }
+
     //(Frontend) init menubar_Application 
-    private static Node menubar_Application(Stage stage1)
+    private static Node menubar_Application(Stage Medialab_Minesweeper)
     {
         MenuBar menubar_Application=new MenuBar();
         Menu menu = new Menu("Application");
-        MenuItem menuitem_Start = menuitem_Start_new_game();
+
+        //(Frontend&Backend) refresh board and start a new game 
+        menu.getItems().add(menuitem_Start_new_game());
         //(Frontend) Shows all scenarios and if you click on one then a new game is initialized
-        Menu menu_Load = menuitem_Load_New_Game(new File("./src/SCENARIOS"),stage1);
-        //MenuItem menuitem_Create = menuitem_Create_Scenario();
-
-        
-        
-
-        menu.getItems().add(menuitem_Start);
-        menu.getItems().add(menu_Load);
-        //menu.getItems().add(menuitem_Create);
+        menu.getItems().add(menuitem_Load_New_Game(new File("./src/SCENARIOS"),Medialab_Minesweeper));
+        //(Backend) create new scenario
+        menu.getItems().add(menuitem_Create_Game());
+        //end program
+        menu.getItems().add(menuitem_Exit());
         menubar_Application.getMenus().add(menu);
 
         menu.setStyle("-fx-background-color: #d6d6d6; ");
@@ -476,11 +520,11 @@ public final class LibFX extends Application
     }
     
     //(Frontend) init node_Menu 
-    private static Node node_Menu_init(Stage stage1)
+    private static Node node_Menu_init(Stage Medialab_Minesweeper)
     {
         HBox hbox_menu=new HBox(0);
         //(Frontend) init menubar_Application and menubar_Details and add them to node_Menu
-        hbox_menu.getChildren().addAll(menubar_Application(stage1),menubar_Details());
+        hbox_menu.getChildren().addAll(menubar_Application(Medialab_Minesweeper),menubar_Details());
         return hbox_menu;
     }
 
@@ -488,25 +532,25 @@ public final class LibFX extends Application
     @Override
     public void start(Stage arg0) throws Exception 
     {
-        /*stages: stage1
-         *Scenes: Medialab_Minesweeper
+        /*stages: Medialab_Minesweeper
+         *Scenes: scene1
          *Groups: root
          */
         //Lib.startnew(Minesweeper.scenario);
         
         try
         {
-            stage_init(stage1);
+            stage_init(Medialab_Minesweeper);
         }
         catch(Exception stage_init)
         {
-            System.out.println("Error initializing stage1");
+            System.out.println("Error initializing Medialab_Minesweeper");
         }
 
         
 
         //(Frontend) init node_Menu and add it to root
-        root_vBox.getChildren().addAll(node_Menu_init(stage1));
+        root_vBox.getChildren().addAll(node_Menu_init(Medialab_Minesweeper));
         
         //(Frontend) init node_Game of collums*rows rectangle blocks and add it to root
         root_vBox.getChildren().addAll(node_Game_init());
@@ -514,9 +558,9 @@ public final class LibFX extends Application
         //make all rectangles on node_Game clickable and manage each click acordingly
         check_for_clicks();
         find_mega();
-        Medialab_Minesweeper.setFill(Color.web("#d6d6d6"));
-        stage1.setScene(Medialab_Minesweeper);
-        stage1.show();
+        scene1.setFill(Color.web("#d6d6d6"));
+        Medialab_Minesweeper.setScene(scene1);
+        Medialab_Minesweeper.show();
         
     }
 }
