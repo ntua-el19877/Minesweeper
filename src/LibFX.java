@@ -3,6 +3,7 @@ package src;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import org.w3c.dom.events.MouseEvent;
 
@@ -35,21 +36,18 @@ import javafx.stage.Stage;
 public final class LibFX extends Application
 {
     private static int rectangle_size=17;
-    private static int width1=18*Lib.collums;
-    private static int heigth1=400;
-    private static int height_info_menu=40;
+    private static Lib lib;
     private static int space_between_rectangles=0;
 
     /*make row*collums array of rectangle photos */
-    private final static Rectangle[] boardRectangle = new Rectangle[Lib.rows*Lib.collums];
+    private static Rectangle[] boardRectangle = new Rectangle[Lib.rows*Lib.collums];
     /*make array to store each row of Rectangle photos */
 
     
     private final static VBox root_vBox=new VBox(space_between_rectangles);
     private final Stage stage1 = new Stage();
 
-    private final static Group root = new Group();
-
+    private static Node node_Game;
     private final Scene Medialab_Minesweeper=new Scene(root_vBox);
     public static int counter=0;
 
@@ -92,6 +90,8 @@ public final class LibFX extends Application
         }
         return vBox;
     }
+
+
 
     public static void update_position(int i,String s)
     {
@@ -322,33 +322,10 @@ public final class LibFX extends Application
         }
     }
 
-    // private static void handle(Event event)
-    // {}
-    // private static void menuitem_Start_new_game(MenuItem menuitem)
-    // {
-    //     ObjectProperty<MouseEvent e<
-    //     {
-    //         System.out.println("Exception thrown when creating new game");
-    //     }>>;
-
-    //     node.setOnMouseClicked(event ->
-    //         {
-    //             refresh_board();
-    //             if (event.getButton()==MouseButton.PRIMARY)
-    //             { 
-    //                 try {
-    //                     Lib.startnew(Minesweeper.scenario);
-    //                     find_mega();
-    //                 } catch (Exception e) {
-    //                     // TODO Auto-generated catch block
-    //                     System.out.println("Exception thrown when creating new game");
-    //                 }
-    //             }
-    //         } );
-    // }
-
-    private static void menuitem_Start_new_game(MenuItem menuitem)
+    //create MenuItem:Start to start new game
+    private static MenuItem menuitem_Start_new_game()
     {
+        MenuItem menuitem=new MenuItem("Start");
         menuitem.setOnAction(new EventHandler<ActionEvent>() {
         public void handle(ActionEvent t) {
             refresh_board();
@@ -365,21 +342,99 @@ public final class LibFX extends Application
                 
         }
     });
+    return menuitem;
+    }
+
+
+    private static VBox noode_Game()
+    {
+        boardRectangle = new Rectangle[lib.rows*lib.collums];
+        HBox[] boardHBox = new HBox[lib.rows];
+        VBox vBox=new VBox(space_between_rectangles);
+        int num=0;
+        // br.setFill(new ImagePattern(new Image("./icons/empty.png")));
+        for(int i=0;i<lib.collums;i++)
+        {
+            boardHBox[i]=new HBox(space_between_rectangles);
+            for(int k=0;k<lib.rows;k++)
+            {
+                /*add 15x15 rectangle Lib.row times in rowRectangle */
+                boardRectangle[num]=new Rectangle(rectangle_size,rectangle_size);
+                boardRectangle[num].setFill(new ImagePattern(new Image("./icons/empty.png")));
+                boardHBox[i].getChildren().addAll(boardRectangle[num]);
+                num++;
+            }
+            vBox.getChildren().addAll(boardHBox[i]);
+        }
+        return vBox;
+    }
+
+    private static void create_new_board()
+    {
+        VBox root_vBox=new VBox();
+        root_vBox.getChildren().remove(node_Game);
+        lib=new Lib();
+        try {
+            lib.startnew(Minesweeper.scenario);
+            
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            System.out.println("Here");
+        }
+        
+        node_Game=noode_Game();
+        root_vBox.getChildren().addAll(node_Game);
+        Scene scene1=new Scene(root_vBox);
+        //Stage stage2=new Stage();
+
+        LibFX.stage1.setScene(scene1);
+        stage1.show();
+    }
+
+    private static MenuItem init_scenario(File file)
+    {
+        //new MenuItem(fileEntry.getName());
+        MenuItem menuitem_scenario=new MenuItem(file.getName());
+        menuitem_scenario.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent t)
+            {
+                Minesweeper.scenario=file.getName();
+                create_new_board();
+            }
+        });
+        return menuitem_scenario;
+    }
+
+    //makes menu: Load with scenarios to s=chose from
+    public static Menu menuitem_Load_New_Game(final File folder) {
+        Menu menu_Load=new Menu("Load");
+        for (final File fileEntry : folder.listFiles()) {
+            if (fileEntry.isDirectory()) {
+                menuitem_Load_New_Game(fileEntry);
+            } else {
+                MenuItem menu_scenario=init_scenario(fileEntry);
+                menu_Load.getItems().add(menu_scenario);
+            }
+        }
+        return menu_Load;
     }
 
     private static Node menubar_Application()
     {
         MenuBar menubar_Application=new MenuBar();
         Menu menu = new Menu("Application");
-        MenuItem menuitem_Start = new MenuItem("Start");
-        MenuItem menuitem_Load = new MenuItem("Load");
-        MenuItem menuitem_Create = new MenuItem("Create");
-        menuitem_Start_new_game(menuitem_Start);
+        MenuItem menuitem_Start = menuitem_Start_new_game();
+        Menu menu_Load = menuitem_Load_New_Game(new File("./src/SCENARIOS"));
+        //MenuItem menuitem_Create = menuitem_Create_Scenario();
+
+        
+        
 
         menu.getItems().add(menuitem_Start);
-        menu.getItems().add(menuitem_Load);
-        menu.getItems().add(menuitem_Create);
+        menu.getItems().add(menu_Load);
+        //menu.getItems().add(menuitem_Create);
         menubar_Application.getMenus().add(menu);
+
         menu.setStyle("-fx-background-color: #d6d6d6; ");
         menubar_Application.setStyle("-fx-background-color: #d6d6d6; ");
         return menubar_Application;
@@ -424,6 +479,7 @@ public final class LibFX extends Application
          *Scenes: Medialab_Minesweeper
          *Groups: root
          */
+        //Lib.startnew(Minesweeper.scenario);
         try
         {
             stage_init(stage1);
@@ -433,28 +489,20 @@ public final class LibFX extends Application
             System.out.println("Error initializing stage1");
         }
 
-        //root_vBox.setPadding(new Insets(10));
-
-
-
+        //make default scenario to play
+        node_Game=node_Game();
 
         root_vBox.getChildren().addAll(node_Menu());
-        //root_vBox.getChildren().addAll(node_Game_Info());
-        //initializes the graphics board
-        root_vBox.getChildren().addAll(node_Game());
         
+        //initializes the graphics board
+        root_vBox.getChildren().addAll(node_Game);
         root_vBox.setStyle("-fx-background-color: #d6d6d6;");
         //checks which positions we click and update nearby positions
         check_for_clicks();
         
         find_mega();
-    //    // boardRectangle.get(1).setFill(new ImagePattern(new Image("./icons/1.png")));
-    //     root.getChildren().addAll(root_vBox);
         Medialab_Minesweeper.setFill(Color.web("#d6d6d6"));
         stage1.setScene(Medialab_Minesweeper);
-        // System.out.println(Lib.board[1]);
-        // System.out.println(Lib.board[12]);
-        // System.out.println(Lib.collums);
         stage1.show();
         
     }

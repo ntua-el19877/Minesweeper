@@ -38,7 +38,7 @@ public class Lib {
         //int scenario_numbers[]=new int[6];
 
         // File path is passed as parameter
-        String scenario_id_file = new String("./src/SCENARIOS/" + string + ".txt");
+        String scenario_id_file = new String("./src/SCENARIOS/" + string );
  
         // Note:  Double backquote is to avoid compiler
         // interpret words
@@ -61,17 +61,17 @@ public class Lib {
         }
         catch(Exception BufferedReader1)
         {
-            System.out.println("InvalidDescriptionException occured while reading "+string+".txt");
+            System.out.println("InvalidDescriptionException occured while reading "+string);
         }
         //return scenario_numbers;
         
     }
     
-    private static int[] read_scenario_margins(String string)
+    private static int[] read_scenario_margins()
     {
         int scenario_numbers_margins[]=new int[8];
         //read SCENARIO-ID-DIFFICULTY-MARGINS to throw exceptions if needed
-        String scenario_id_dif_margins_file=new String("./src/SCENARIOS/" + string + "-DIFFICULTY-MARGINS.txt");
+        String scenario_id_dif_margins_file=new String("./src/SCENARIO-MARGINS/SCENARIO-" + game_difficulty + "-DIFFICULTY-MARGINS.txt");
         
         try(Scanner scanner = new Scanner(new File(scenario_id_dif_margins_file))) {
             /*
@@ -89,7 +89,7 @@ public class Lib {
         }
         catch(Exception BufferedReader2)
         {
-            System.out.println("InvalidDescriptionException occured while reading "+string+"-DIFFICULTY-MARGINS.txt");
+            System.out.println("InvalidDescriptionException occured while reading SCENARIO-"+game_difficulty+"-DIFFICULTY-MARGINS.txt");
         }
         return scenario_numbers_margins;
     }
@@ -115,7 +115,7 @@ public class Lib {
         int scenario_numbers_margins[]=new int[8];
 
         read_scenario(string);
-        scenario_numbers_margins=read_scenario_margins(string);
+        scenario_numbers_margins=read_scenario_margins();
         
         check_scenario(scenario_numbers_margins);
 
@@ -340,15 +340,15 @@ public class Lib {
     }
     public static void startnew(String scenario) throws Exception
     {
-        if(Minesweeper.scenario==null) Minesweeper.scenario="SCENARIO-2";
-        Lib.ReadFile(Minesweeper.scenario);
+        if(Minesweeper.scenario==null) Minesweeper.scenario="SCENARIO-1.txt";
+        ReadFile(Minesweeper.scenario);
         bomb_positions=new int[2*bomb_number];        
         //save bomb positions in file and in arr
         create_bomb_positions(); 
         LibFX.counter=0;
-        board =Lib.board_creator(bomb_positions);
+        board =board_creator(bomb_positions);
         //System.out.println(Lib.board[2]);
-        Lib.print_board(Lib.board);
+        print_board(board);
     }
 
 }

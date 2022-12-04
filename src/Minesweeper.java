@@ -33,6 +33,7 @@ public class Minesweeper {
        * 
        */
       //int scenario_info[]=new int[6];
+      //Lib ll=new Lib();
       Lib.startnew(scenario);
       LibFX.main(args);
 
