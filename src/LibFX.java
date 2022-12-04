@@ -67,29 +67,29 @@ public final class LibFX extends Application
         stage.getIcons().add(minesweeper_icon);
     }
 
-    //init board of collums*rows blocks
-    private static VBox node_Game()
-    {
+    // //init board of collums*rows blocks
+    // private static VBox node_Game()
+    // {
         
-        HBox[] boardHBox = new HBox[Lib.rows];
-        VBox vBox=new VBox(space_between_rectangles);
-        int num=0;
-        // br.setFill(new ImagePattern(new Image("./icons/empty.png")));
-        for(int i=0;i<Lib.collums;i++)
-        {
-            boardHBox[i]=new HBox(space_between_rectangles);
-            for(int k=0;k<Lib.rows;k++)
-            {
-                /*add 15x15 rectangle Lib.row times in rowRectangle */
-                boardRectangle[num]=new Rectangle(rectangle_size,rectangle_size);
-                boardRectangle[num].setFill(new ImagePattern(new Image("./icons/empty.png")));
-                boardHBox[i].getChildren().addAll(boardRectangle[num]);
-                num++;
-            }
-            vBox.getChildren().addAll(boardHBox[i]);
-        }
-        return vBox;
-    }
+    //     HBox[] boardHBox = new HBox[Lib.rows];
+    //     VBox vBox=new VBox(space_between_rectangles);
+    //     int num=0;
+    //     // br.setFill(new ImagePattern(new Image("./icons/empty.png")));
+    //     for(int i=0;i<Lib.collums;i++)
+    //     {
+    //         boardHBox[i]=new HBox(space_between_rectangles);
+    //         for(int k=0;k<Lib.rows;k++)
+    //         {
+    //             /*add 15x15 rectangle Lib.row times in rowRectangle */
+    //             boardRectangle[num]=new Rectangle(rectangle_size,rectangle_size);
+    //             boardRectangle[num].setFill(new ImagePattern(new Image("./icons/empty.png")));
+    //             boardHBox[i].getChildren().addAll(boardRectangle[num]);
+    //             num++;
+    //         }
+    //         vBox.getChildren().addAll(boardHBox[i]);
+    //     }
+    //     return vBox;
+    // }
 
 
 
@@ -234,16 +234,16 @@ public final class LibFX extends Application
         }
     }
 
-    //checks which positions we click and changes image accordingly
-    private static void check_for_clicks()
+    //make all rectangles on node_Game clickable and manage each click acordingly
+    public static void check_for_clicks()
     {
-        for(int i=0;i<Lib.board_len;i++)
+        for(int i=0;i<lib.board_len;i++)
         {
             final int I=i;
             boardRectangle[i].setOnMousePressed(event ->
             {
-                if(Lib.positions_uncovered[I]==1) return;
-                if(Lib.board[I]<-10) return;
+                if(lib.positions_uncovered[I]==1) return;
+                if(lib.board[I]<-10) return;
                 boardRectangle[I].setFill(new ImagePattern(new Image("./icons/0.png")));
 
             });
@@ -254,9 +254,9 @@ public final class LibFX extends Application
                 {
                     
                     //skip if position is already uncoverd
-                    if(Lib.positions_uncovered[I]==1) return;
-                    if(Lib.board[I]<-10) return;
-                    boardRectangle[I].setFill(new ImagePattern(new Image("./icons/"+Lib.board[I]+".png")));
+                    if(lib.positions_uncovered[I]==1) return;
+                    if(lib.board[I]<-10) return;
+                    boardRectangle[I].setFill(new ImagePattern(new Image("./icons/"+lib.board[I]+".png")));
                     //check what to do since we clicked on position
                     try {
                         counter++;
@@ -271,10 +271,10 @@ public final class LibFX extends Application
                 if ((event.getButton()==MouseButton.SECONDARY))
                 {
                     //if there is no flag
-                    if(Lib.board[I]>-10)
+                    if(lib.board[I]>-10)
                     { 
                         //if position is already uncoverd then do nothing
-                        if(Lib.positions_uncovered[I]==1) return;  
+                        if(lib.positions_uncovered[I]==1) return;  
                         boardRectangle[I].setFill(new ImagePattern(new Image("./icons/flag.png")));
                         counter++;
                         //check if this one is a megabomb and uncover if counter<5
@@ -286,7 +286,7 @@ public final class LibFX extends Application
                         }
 
                         //the positions with flags have value-20 to be distinguished from the other numbers when game ends
-                        Lib.board[I]-=20;
+                        lib.board[I]-=20;
                     }
                     else
                     {     
@@ -345,8 +345,8 @@ public final class LibFX extends Application
     return menuitem;
     }
 
-
-    private static VBox noode_Game()
+    //(Frontend) init node_Game of collums*rows rectangle blocks
+    private static VBox node_Game_init()
     {
         boardRectangle = new Rectangle[lib.rows*lib.collums];
         HBox[] boardHBox = new HBox[lib.rows];
@@ -369,62 +369,81 @@ public final class LibFX extends Application
         return vBox;
     }
 
-    private static void create_new_board()
+    //(Frontend)removes last node_Game and replaces it 
+    //with new node_Game based on the last scenario we chose
+    private static void remove_and_add_node_Game(Stage stage1)
     {
         VBox root_vBox=new VBox();
-        root_vBox.getChildren().remove(node_Game);
-        lib=new Lib();
+        //stage1.getChildren().remove(node_Game);
+        //create new lib
         try {
-            lib.startnew(Minesweeper.scenario);
-            
+            //(Backend)creates new board based on scenario we chose 
+            Lib.startnew(Minesweeper.scenario);
         } catch (Exception e) {
             // TODO Auto-generated catch block
             System.out.println("Here");
         }
-        
-        node_Game=noode_Game();
+        root_vBox.getChildren().addAll(node_Menu_init(stage1));
+        //(Frontend) init node_Game of collums*rows rectangle blocks
+        node_Game=node_Game_init();
         root_vBox.getChildren().addAll(node_Game);
+        
+        check_for_clicks();
         Scene scene1=new Scene(root_vBox);
-        //Stage stage2=new Stage();
+       // Stage stage2=new Stage();
 
-        LibFX.stage1.setScene(scene1);
+        stage1.setScene(scene1);
         stage1.show();
     }
 
-    private static MenuItem init_scenario(File file)
+    //(Frontend & Backend) init a new scenario if it is clicked
+    //add all scenarios in menu_Load from where you can chose one
+    private static MenuItem init_scenario(File file,Stage stage1)
     {
-        //new MenuItem(fileEntry.getName());
+        //create menuitem and add it to menu_Load
         MenuItem menuitem_scenario=new MenuItem(file.getName());
+
+        //check if scenario is clicked
         menuitem_scenario.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t)
             {
+                //updates scenario name
                 Minesweeper.scenario=file.getName();
-                create_new_board();
+                //(Frontend)removes last node_Game and replaces it 
+                //with new node_Game based on the last scenario we chose
+                remove_and_add_node_Game(stage1);
             }
         });
         return menuitem_scenario;
     }
 
-    //makes menu: Load with scenarios to s=chose from
-    public static Menu menuitem_Load_New_Game(final File folder) {
+    //(Frontend) Swows all scenarios and if you click on one then a new game is initialized
+    public static Menu menuitem_Load_New_Game(final File folder,Stage stage1) 
+    {
         Menu menu_Load=new Menu("Load");
+        //show all files
         for (final File fileEntry : folder.listFiles()) {
             if (fileEntry.isDirectory()) {
-                menuitem_Load_New_Game(fileEntry);
-            } else {
-                MenuItem menu_scenario=init_scenario(fileEntry);
-                menu_Load.getItems().add(menu_scenario);
+                menuitem_Load_New_Game(fileEntry,stage1);
+            } 
+            else 
+            {
+                //(Frontend & Backend) init a new scenario if it is clicked
+                //add all scenarios in menu_Load from where you can chose one
+                menu_Load.getItems().add(init_scenario(fileEntry,stage1));
             }
         }
         return menu_Load;
     }
 
-    private static Node menubar_Application()
+    //(Frontend) init menubar_Application 
+    private static Node menubar_Application(Stage stage1)
     {
         MenuBar menubar_Application=new MenuBar();
         Menu menu = new Menu("Application");
         MenuItem menuitem_Start = menuitem_Start_new_game();
-        Menu menu_Load = menuitem_Load_New_Game(new File("./src/SCENARIOS"));
+        //(Frontend) Shows all scenarios and if you click on one then a new game is initialized
+        Menu menu_Load = menuitem_Load_New_Game(new File("./src/SCENARIOS"),stage1);
         //MenuItem menuitem_Create = menuitem_Create_Scenario();
 
         
@@ -440,6 +459,7 @@ public final class LibFX extends Application
         return menubar_Application;
     }
 
+    //(Frontend) init menubar_Details 
     private static Node menubar_Details()
     {
         MenuBar menubar_Details=new MenuBar();
@@ -454,24 +474,17 @@ public final class LibFX extends Application
         menubar_Details.setStyle("-fx-background-color: #d6d6d6; ");
         return menubar_Details;
     }
-
-    private static Node node_Menu()
+    
+    //(Frontend) init node_Menu 
+    private static Node node_Menu_init(Stage stage1)
     {
         HBox hbox_menu=new HBox(0);
-        hbox_menu.getChildren().addAll(menubar_Application(),menubar_Details());
+        //(Frontend) init menubar_Application and menubar_Details and add them to node_Menu
+        hbox_menu.getChildren().addAll(menubar_Application(stage1),menubar_Details());
         return hbox_menu;
     }
 
 
-    // //rectangel that has the timers bombs etc
-    // private static Rectangle node_Game_Info()
-    // {
-    //     Rectangle info_rect=new Rectangle(width1-20,height_info_menu);
-    //     //info_rect.setHeight(height_info_menu);
-    //     info_rect.setFill(Color.RED);
-        
-    //     return info_rect;
-    // }
     @Override
     public void start(Stage arg0) throws Exception 
     {
@@ -480,6 +493,7 @@ public final class LibFX extends Application
          *Groups: root
          */
         //Lib.startnew(Minesweeper.scenario);
+        
         try
         {
             stage_init(stage1);
@@ -489,17 +503,16 @@ public final class LibFX extends Application
             System.out.println("Error initializing stage1");
         }
 
-        //make default scenario to play
-        node_Game=node_Game();
+        
 
-        root_vBox.getChildren().addAll(node_Menu());
+        //(Frontend) init node_Menu and add it to root
+        root_vBox.getChildren().addAll(node_Menu_init(stage1));
         
-        //initializes the graphics board
-        root_vBox.getChildren().addAll(node_Game);
+        //(Frontend) init node_Game of collums*rows rectangle blocks and add it to root
+        root_vBox.getChildren().addAll(node_Game_init());
         root_vBox.setStyle("-fx-background-color: #d6d6d6;");
-        //checks which positions we click and update nearby positions
+        //make all rectangles on node_Game clickable and manage each click acordingly
         check_for_clicks();
-        
         find_mega();
         Medialab_Minesweeper.setFill(Color.web("#d6d6d6"));
         stage1.setScene(Medialab_Minesweeper);

@@ -22,6 +22,7 @@ public class Minesweeper {
 //       }
 //   }
    public static String scenario=null;
+   public static int ii=0;
    public static void main(String []args) throws Exception {
       /*
        * scenario_info[0]=mode
