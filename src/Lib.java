@@ -351,4 +351,19 @@ public class Lib {
         print_board(board);
     }
 
+    public static void write_file() {
+        try {
+            System.out.println(Minesweeper.String_name);
+          File myObj = new File("./src/SCENARIOS/"+Minesweeper.String_name+".txt");
+          if (myObj.createNewFile()) {
+            System.out.println("File created: " + myObj.getName());
+          } else {
+            System.out.println("File already exists.");
+          }
+        } catch (IOException e) {
+          System.out.println("An error occurred.");
+          e.printStackTrace();
+        }
+    }
+
 }

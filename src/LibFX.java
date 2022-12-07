@@ -1,9 +1,13 @@
 package src;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
+
+import javax.swing.Action;
 
 import org.w3c.dom.events.MouseEvent;
 
@@ -23,20 +27,29 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public final class LibFX extends Application
 {
-    private static int width_scene_Create_Scenario=300,height_scene_Create_Scenario=400;
+    private static int width_scene_Create_Scenario=150,height_scene_Create_Scenario=240;
     private static int rectangle_size=17;
     //private static Lib lib;
     private static int space_between_rectangles=0;
@@ -53,6 +66,10 @@ public final class LibFX extends Application
     private final Scene scene1=new Scene(root_vBox);
     public static int counter=0;
 
+    
+    private static String String_difficulty ="1";
+    private static String String_bombs="0";
+    private static String String_has_mega_bomb="0";
 
     public static void main(String[] args)
     {
@@ -368,6 +385,11 @@ public final class LibFX extends Application
             }
             vBox.getChildren().addAll(boardHBox[i]);
         }
+        vBox.setStyle("-fx-background-color: white;"
+                            + "-fx-border-color: grey;"
+                            + "-fx-border-width: 3;"
+                            + "-fx-border-radius: 1;"
+                            + "-fx-padding: 6;");
         return vBox;
     }
 
@@ -439,6 +461,133 @@ public final class LibFX extends Application
         return menu_Load;
     }
 
+    private static void configureBorder(final Region region) {
+        region.setStyle("-fx-background-color: white;"
+                            + "-fx-border-color: black;"
+                            + "-fx-border-width: 1;"
+                            + "-fx-border-radius: 6;"
+                            + "-fx-padding: 6;");
+    }
+
+    private static HBox createHBox(final double spacing,final Node... children) {
+        final HBox hbox = new HBox(spacing);
+        hbox.getChildren().addAll(children);
+        return hbox;
+    }
+    private static VBox createVBox(final double spacing,final Node... children) {
+        final VBox vbox = new VBox(spacing);
+        vbox.getChildren().addAll(children);
+        return vbox;
+    }
+
+    //create TextField:scneario name
+    private static TextField node_name()
+    {
+        final TextField tf_name=new TextField();
+        tf_name.setPrefColumnCount(10);
+        tf_name.setPromptText("Scenario Name");
+        configureBorder(tf_name);
+        tf_name.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent e)
+            {
+                Minesweeper.String_name=tf_name.getText();
+                System.out.println(tf_name.getText());
+            }
+        });
+        return tf_name;
+    }
+    
+    //create RadioButtons:scenario difficulty
+    private static VBox node_difficulty()
+    {
+        RadioButton radioutton_1=new RadioButton("1");
+        RadioButton radioutton_2=new RadioButton("2");
+        ToggleGroup tg=new ToggleGroup();
+        radioutton_1.setToggleGroup(tg);
+        radioutton_2.setToggleGroup(tg);
+        radioutton_1.setSelected(true);
+        HBox hbox_difficulty=new HBox(5,radioutton_1,radioutton_2);
+        Text tf=new Text("Difficulty level");
+        VBox vbox_difficulty=new VBox(5,tf,hbox_difficulty);
+        configureBorder(vbox_difficulty);
+        radioutton_1.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent t)
+            {
+                String_difficulty="1";
+            }
+        });
+        radioutton_2.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent t)
+            {
+                String_difficulty="2";
+            }
+        });
+        return vbox_difficulty;
+    }
+    
+    //create TextField:number of bombs
+    private static TextField node_bombs()
+    {           
+        final TextField tf_bombs=new TextField();
+        tf_bombs.setPrefColumnCount(10);
+        tf_bombs.setPromptText("Number of Bombs");
+        configureBorder(tf_bombs);
+        tf_bombs.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent e)
+            {
+                String_bombs=tf_bombs.getText();
+            }
+        });
+        return tf_bombs;
+    }
+
+    //create button:has mega bomb
+    private static VBox node_has_mega_bomb()
+    {
+        final Text text_has_mega_bomb=new Text("Has a Mega Bomb");
+        final Label acceptanceLabel = new Label("No");
+        final Button acceptButton = new Button("Yes");
+        acceptButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(final ActionEvent event) {
+                acceptanceLabel.setText("Yes");
+                String_has_mega_bomb="1";
+            }
+        });
+        final Button declineButton = new Button("No");
+        declineButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(final ActionEvent event) {
+                acceptanceLabel.setText("No");
+                String_has_mega_bomb="0";
+            }
+        });
+        final HBox panel = createHBox(6,                                         acceptButton,
+                                    declineButton,
+                                    acceptanceLabel);
+        final VBox vbox_has_mega_bomb=createVBox(6, text_has_mega_bomb,panel);
+        panel.setAlignment(Pos.CENTER_LEFT);
+        vbox_has_mega_bomb.setAlignment(Pos.CENTER_LEFT);
+        configureBorder(vbox_has_mega_bomb);
+        return vbox_has_mega_bomb;
+    }
+
+    //create button:finish
+    private static Button node_finish(Stage stage_Create_Scenario)
+    {
+        final Button button_Finish=new Button("Finish");
+        button_Finish.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent t)
+            {
+                //Minesweeper.String_name = node_name().getText();
+                Lib.write_file();
+                stage_Create_Scenario.hide();
+            } 
+        });
+            configureBorder(button_Finish);
+            return button_Finish;
+    }
+
     public static MenuItem menuitem_Create_Game()
     {
         MenuItem menuitem_Create=new MenuItem("Create");
@@ -450,19 +599,17 @@ public final class LibFX extends Application
                 Group root_Create_Scenario=new Group();
                 Scene scene_Create_Scenario=new Scene(
                     root_Create_Scenario , width_scene_Create_Scenario , height_scene_Create_Scenario);
-                
-                VBox vbox_temp=new VBox();
-                final TextField textf=new TextField();
-                textf.setPrefColumnCount(10);
-                textf.setPromptText("Scenario Name");
-
-                final TextField textf2=new TextField();
-                textf2.setPrefColumnCount(10);
-                textf2.setPromptText("Scenario Difficulty");
+            
+                VBox vbox_Create=createVBox(5, 
+                    node_name(),
+                    node_difficulty(),
+                    node_bombs(),
+                    node_has_mega_bomb(),
+                    node_finish(stage_Create_Scenario)); 
 
                 stage_Create_Scenario.setResizable(false);
                 stage_Create_Scenario.setTitle("Custom Scenario");
-                root_Create_Scenario.getChildren().addAll(textf,textf2);
+                root_Create_Scenario.getChildren().addAll(vbox_Create);
                 stage_Create_Scenario.setScene(scene_Create_Scenario);
                 stage_Create_Scenario.show();
             }
@@ -546,7 +693,6 @@ public final class LibFX extends Application
         {
             System.out.println("Error initializing Medialab_Minesweeper");
         }
-
         
 
         //(Frontend) init node_Menu and add it to root
