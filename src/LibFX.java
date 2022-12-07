@@ -66,10 +66,10 @@ public final class LibFX extends Application
     private final Scene scene1=new Scene(root_vBox);
     public static int counter=0;
 
-    
-    private static String String_difficulty ="1";
-    private static String String_bombs="0";
-    private static String String_has_mega_bomb="0";
+    public static String String_name;
+    public static String String_difficulty ="1";
+    public static String String_bombs="0";
+    public static String String_has_mega_bomb="0";
 
     public static void main(String[] args)
     {
@@ -85,32 +85,6 @@ public final class LibFX extends Application
             ".\\icons\\minesweeper_icon.png").toURI().toURL().toExternalForm());
         stage.getIcons().add(minesweeper_icon);
     }
-
-    // //init board of collums*rows blocks
-    // private static VBox node_Game()
-    // {
-        
-    //     HBox[] boardHBox = new HBox[Lib.rows];
-    //     VBox vBox=new VBox(space_between_rectangles);
-    //     int num=0;
-    //     // br.setFill(new ImagePattern(new Image("./icons/empty.png")));
-    //     for(int i=0;i<Lib.collums;i++)
-    //     {
-    //         boardHBox[i]=new HBox(space_between_rectangles);
-    //         for(int k=0;k<Lib.rows;k++)
-    //         {
-    //             /*add 15x15 rectangle Lib.row times in rowRectangle */
-    //             boardRectangle[num]=new Rectangle(rectangle_size,rectangle_size);
-    //             boardRectangle[num].setFill(new ImagePattern(new Image("./icons/empty.png")));
-    //             boardHBox[i].getChildren().addAll(boardRectangle[num]);
-    //             num++;
-    //         }
-    //         vBox.getChildren().addAll(boardHBox[i]);
-    //     }
-    //     return vBox;
-    // }
-
-
 
     public static void update_position(int i,String s)
     {
@@ -490,8 +464,7 @@ public final class LibFX extends Application
         tf_name.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e)
             {
-                Minesweeper.String_name=tf_name.getText();
-                System.out.println(tf_name.getText());
+                String_name=tf_name.getText();
             }
         });
         return tf_name;

@@ -353,16 +353,26 @@ public class Lib {
 
     public static void write_file() {
         try {
-            System.out.println(Minesweeper.String_name);
-          File myObj = new File("./src/SCENARIOS/"+Minesweeper.String_name+".txt");
-          if (myObj.createNewFile()) {
-            System.out.println("File created: " + myObj.getName());
-          } else {
+            System.out.println(LibFX.String_name);
+            File myObj = new File("./src/SCENARIOS/"+LibFX.String_name+".txt");
+            if (myObj.createNewFile()) {
+                System.out.println("File created: " + myObj.getName());
+            
+            //clears mine.txt
+            PrintWriter writer = new PrintWriter("./src/SCENARIOS/"+LibFX.String_name+".txt");
+            writer.println(LibFX.String_difficulty);
+            writer.println(LibFX.String_bombs);
+            //writer.println(LibFX.String_time);
+            writer.println(LibFX.String_has_mega_bomb);
+            writer.close();
+        } 
+        else {
             System.out.println("File already exists.");
-          }
-        } catch (IOException e) {
-          System.out.println("An error occurred.");
-          e.printStackTrace();
+        }
+        } 
+        catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
         }
     }
 
