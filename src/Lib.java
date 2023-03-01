@@ -71,7 +71,7 @@ public class Lib {
     {
         int scenario_numbers_margins[]=new int[8];
         //read SCENARIO-ID-DIFFICULTY-MARGINS to throw exceptions if needed
-        String scenario_id_dif_margins_file=new String("./src/SCENARIO-MARGINS/SCENARIO-" + game_difficulty + "-DIFFICULTY-MARGINS.txt");
+        String scenario_id_dif_margins_file=new String("./src/medialab/SCENARIO-" + game_difficulty + "-DIFFICULTY-MARGINS.txt");
         
         try(Scanner scanner = new Scanner(new File(scenario_id_dif_margins_file))) {
             /*
@@ -338,6 +338,7 @@ public class Lib {
         return (temp_array);
     
     }
+    
     public static void startnew(String scenario) throws Exception
     {
         if(Minesweeper.scenario==null) Minesweeper.scenario="SCENARIO-1.txt";
@@ -362,7 +363,8 @@ public class Lib {
             PrintWriter writer = new PrintWriter("./src/SCENARIOS/"+LibFX.String_name+".txt");
             writer.println(LibFX.String_difficulty);
             writer.println(LibFX.String_bombs);
-            //writer.println(LibFX.String_time);
+            writer.println(LibFX.String_timer);
+            //writer.println(301);
             writer.println(LibFX.String_has_mega_bomb);
             writer.close();
         } 

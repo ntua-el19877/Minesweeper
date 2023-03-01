@@ -37,6 +37,7 @@ import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
@@ -49,7 +50,7 @@ import javafx.stage.Stage;
 
 public final class LibFX extends Application
 {
-    private static int width_scene_Create_Scenario=150,height_scene_Create_Scenario=240;
+    private static int width_scene_Create_Scenario=150,height_scene_Create_Scenario=280;
     private static int rectangle_size=17;
     //private static Lib lib;
     private static int space_between_rectangles=0;
@@ -57,10 +58,9 @@ public final class LibFX extends Application
     /*make row*collums array of rectangle photos */
     private static Rectangle[] boardRectangle = new Rectangle[Lib.rows*Lib.collums];
     /*make array to store each row of Rectangle photos */
-
     
     private final static VBox root_vBox=new VBox(space_between_rectangles);
-    private final Stage Medialab_Minesweeper = new Stage();
+    private final static Stage Medialab_Minesweeper = new Stage();
 
     private static Node node_Game;
     private final Scene scene1=new Scene(root_vBox);
@@ -70,7 +70,9 @@ public final class LibFX extends Application
     public static String String_difficulty ="1";
     public static String String_bombs="0";
     public static String String_has_mega_bomb="0";
+    public static String String_timer;
 
+    private static GridPane gp=new GridPane();
     public static void main(String[] args)
     {
         launch(args);
@@ -555,11 +557,41 @@ public final class LibFX extends Application
                 //Minesweeper.String_name = node_name().getText();
                 Lib.write_file();
                 stage_Create_Scenario.hide();
+                refresh_board();
+                Minesweeper.scenario=String_name+".txt";
+                try 
+                {
+                    //start new game with created scenario
+                    Lib.startnew(Minesweeper.scenario);                   
+                    find_mega();
+                } 
+                catch (Exception e) 
+                {
+                    // TODO Auto-generated catch block
+                    System.out.println("Exception thrown when creating new game");
+                }
+              
             } 
         });
             configureBorder(button_Finish);
             return button_Finish;
     }
+
+        //create TextField:time
+        private static TextField node_timer()
+        {           
+            final TextField tf_timer=new TextField();
+            tf_timer.setPrefColumnCount(10);
+            tf_timer.setPromptText("Time");
+            configureBorder(tf_timer);
+            tf_timer.setOnAction(new EventHandler<ActionEvent>() {
+                public void handle(ActionEvent e)
+                {
+                    String_timer=tf_timer.getText();
+                }
+            });
+            return tf_timer;
+        }
 
     public static MenuItem menuitem_Create_Game()
     {
@@ -577,6 +609,7 @@ public final class LibFX extends Application
                     node_name(),
                     node_difficulty(),
                     node_bombs(),
+                    node_timer(),
                     node_has_mega_bomb(),
                     node_finish(stage_Create_Scenario)); 
 
@@ -657,7 +690,7 @@ public final class LibFX extends Application
          *Groups: root
          */
         //Lib.startnew(Minesweeper.scenario);
-        
+       // System.out.println("got here");
         try
         {
             stage_init(Medialab_Minesweeper);
@@ -666,14 +699,30 @@ public final class LibFX extends Application
         {
             System.out.println("Error initializing Medialab_Minesweeper");
         }
-        
+        Lib.startnew(Minesweeper.scenario);
+        root_vBox.getChildren().addAll(gp);
 
-        //(Frontend) init node_Menu and add it to root
-        root_vBox.getChildren().addAll(node_Menu_init(Medialab_Minesweeper));
+        gp.add(node_Menu_init(Medialab_Minesweeper),0,0);
+        gp.add(node_Game_init(),0,1);
+        // gp.hide
+
+
+        // //(Frontend) init node_Menu and add it to root
+        // root_vBox.getChildren().addAll(node_Menu_init(Medialab_Minesweeper));
         
-        //(Frontend) init node_Game of collums*rows rectangle blocks and add it to root
-        root_vBox.getChildren().addAll(node_Game_init());
-        root_vBox.setStyle("-fx-background-color: #d6d6d6;");
+        // //(Frontend) init node_Game of collums*rows rectangle blocks and add it to root
+        // root_vBox.getChildren().addAll(node_Game_init());
+        // root_vBox.setStyle("-fx-background-color: #d6d6d6;");
+        
+        // TextField tf1=new TextField("1");
+        // TextField tf2=new TextField("2");
+        // TextField tf3=new TextField("3");
+        // gp.add(tf1,0,0);
+        // gp.add(tf2,1,1);
+        // gp.setRowIndex(tf1, 0);
+        // gp.setRowIndex(tf2, 1);
+        // gp.setRowIndex(tf3, 2);
+        
         //make all rectangles on node_Game clickable and manage each click acordingly
         check_for_clicks();
         find_mega();

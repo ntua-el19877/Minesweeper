@@ -1,7 +1,5 @@
 package src;
 
-import java.io.IOException;
-import java.lang.System.Logger.Level;
 
 /*
  * Angelos Loukas
@@ -12,17 +10,8 @@ import java.lang.System.Logger.Level;
 
 public class Minesweeper {
 
-//    public static void openFileLocation(String path) {
-//       if (InfoTool.osName.toLowerCase().contains("win")) {
-//           try {
-//               Runtime.getRuntime().exec("explorer.exe /select," + path);
-//           } catch (IOException ex) {
-//               Main.logger.log(Level.WARNING, ex.getMessage(), ex);
-//           }
-//       }
-//   }
    public static String scenario=null;
-   //public static String String_name;
+   
    public static void main(String []args) throws Exception {
       /*
        * scenario_info[0]=mode
@@ -34,7 +23,23 @@ public class Minesweeper {
        * 
        */
       //int scenario_info[]=new int[6];
-      //Lib ll=new Lib();
+      Lib.ReadFile("SCENARIO-1");
+      //for(int i=0;i<6;i++)
+      //   System.out.println(scenario_info[i]);
+      int[] bomb_positions=new int[2*Lib.bomb_number];  
+      //System.out.println("collums:"+Lib.collums+"\nrows:"+Lib.rows);        
+      //save bomb positions in file and in arr
+      bomb_positions=Lib.create_bomb_positions(); 
+      // for(int i=0;i<Lib.bomb_number*2;i++)
+      // {
+      //    System.out.println(bomb_positions[i]);
+      // }  
+
+      
+      
+      //Lib.board =Lib.board_creator(bomb_positions);
+      //System.out.println(Lib.board[2]);
+      //Lib.print_board(Lib.board);
       Lib.startnew(scenario);
       LibFX.main(args);
 
