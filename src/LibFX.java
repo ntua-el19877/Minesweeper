@@ -160,9 +160,19 @@ public final class LibFX extends Application
             ArrayList<Integer> temp_array=Lib.get_positions_that_changed(i);
             for(int k=0;k<temp_array.size();k++)
             {
+                // System.out.println("Place: "+k);
+                // System.out.println("Value: "+temp_array.get(k));
                 
+                // if(Lib.board[temp_array.get(k)]<-10) updateFlagInfo(-1);
                 //arr.get(k) has position
-                if(temp_array.get(k)>=0) update_position(temp_array.get(k),Lib.board[temp_array.get(k)]);
+                if(temp_array.get(k)>=0){
+                    // update flags
+                    updateFlagInfo(-2);
+                     update_position(temp_array.get(k),Lib.board[temp_array.get(k)]);
+                     
+                }
+                
+                // if(Lib.board[k]<-10) updateFlagInfo(-1);
             }
             
         }
@@ -259,6 +269,24 @@ public final class LibFX extends Application
     //updates flag_num with +up and updates flag info 
     private static void updateFlagInfo(int up)
     {
+        //update all to 0
+        if(up==0) 
+        {
+            f1.setFill(new ImagePattern(new Image("./icons/timer0.jpg")));
+            f2.setFill(new ImagePattern(new Image("./icons/timer0.jpg")));
+            f3.setFill(new ImagePattern(new Image("./icons/timer0.jpg")));
+            return;
+        }
+        else if(up==-2)//if -2 update position
+        {
+            int _l=flag_num%10;
+        int _m=(flag_num/10)%10;
+        int _f=(flag_num/100)%10;
+        f3.setFill(new ImagePattern(new Image("./icons/timer"+_l+".jpg")));
+        f2.setFill(new ImagePattern(new Image("./icons/timer"+_m+".jpg")));
+        f1.setFill(new ImagePattern(new Image("./icons/timer"+_f+".jpg")));
+        return;
+        }
         flag_num+=up;
         //update last flag info
         int _l=flag_num%10;
@@ -276,6 +304,7 @@ public final class LibFX extends Application
         {
             f1.setFill(new ImagePattern(new Image("./icons/timer"+_f+".jpg")));
         }
+        return;
     }
 
     //make all rectangles on node_Game clickable and manage each click acordingly
@@ -385,6 +414,9 @@ public final class LibFX extends Application
                 Lib.startnew(Minesweeper.scenario);                   
                 find_mega();//has to be removed---------------------------------------------------------------------------
                 Lib.clickedRectangles=0;
+                
+                flag_num=0;
+                updateFlagInfo(0);
             } 
             catch (Exception e) 
             {
@@ -484,6 +516,8 @@ public final class LibFX extends Application
         for (final File fileEntry : folder.listFiles()) {
             if (fileEntry.isDirectory()) {
                 menuitem_Load_New_Game(fileEntry,Medialab_Minesweeper);
+                flag_num=0;
+                updateFlagInfo(0);
             } 
             else 
             {
@@ -740,7 +774,11 @@ public final class LibFX extends Application
                 Scene _scene=new Scene(
                     _root);
                 String[] arr=Lib.readGames();
-                HBox hbox_Rounds=createHBox(20,listItemsToVBox(0,"Bombs",arr),listItemsToVBox(1,"Number of tries",arr),listItemsToVBox(2,"Time",arr),listItemsToVBox(3,"Game status",arr));
+                HBox hbox_Rounds=createHBox(20,
+                                listItemsToVBox(0,"Bombs",arr),
+                                listItemsToVBox(1,"Number of tries",arr),
+                                listItemsToVBox(2,"Time",arr),
+                                listItemsToVBox(3,"Game status",arr));
                 hbox_Rounds.setPadding(new Insets(10));
                 _stage.setResizable(false);
                 _stage.setTitle("Last Rounds");

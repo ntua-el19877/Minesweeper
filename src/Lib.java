@@ -250,7 +250,7 @@ public class Lib {
         String[] row = new String[20];
         try {
             BufferedReader reader = new BufferedReader(new FileReader("./src/game_data.txt"));
-            for(int k=0;k<4;k++)
+            for(int k=0;k<5;k++)
             {
                 
             String line = reader.readLine();
@@ -311,7 +311,7 @@ public class Lib {
     }
     
     public static void startTimer(){startTime=System.currentTimeMillis();}
-    public static void stopTimer(){elapsedTime=(int) (System.currentTimeMillis()-startTime)/1000+1;}
+    public static void stopTimer(){elapsedTime=(int) (System.currentTimeMillis()-startTime);}
     /*
     creates the array or "board" that stores
     -2 for mega bomb
@@ -351,7 +351,14 @@ public class Lib {
         //check if this positions is already uncoverd
         ArrayList<Integer> temp_array=new ArrayList<Integer>();
         //if there is a flag then remove flag
-        if(board[position]<-10) board[position]+=20;
+        if(board[position]<-10) {
+            // System.out.println(position);
+            board[position]+=20;
+            // System.out.println(LibFX.flag_num);
+            LibFX.flag_num=LibFX.flag_num-1;
+            // System.out.println(LibFX.flag_num);
+
+        }
         //check if position is already uncoverd
         if(positions_uncovered[position]==1) 
         {
