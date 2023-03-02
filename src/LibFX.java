@@ -58,8 +58,23 @@ public final class LibFX extends Application
     private static int space_between_rectangles=0;
     // private static int clickedRectangles=0;
 
+    static int flag_num=0;
     /*make row*collums array of rectangle photos */
     private static Rectangle[] boardRectangle = new Rectangle[Lib.rows*Lib.collums];
+
+    //these rectangles will hold info about the info screen
+    //b are for the bomb numbers
+    //f are for the flag numbers
+    //t are for the time
+    private static Rectangle b1=new Rectangle();
+    private static Rectangle b2=new Rectangle();
+    private static Rectangle b3=new Rectangle();
+    private static Rectangle f1=new Rectangle();
+    private static Rectangle f2=new Rectangle();
+    private static Rectangle f3=new Rectangle();
+    private static Rectangle t1=new Rectangle();
+    private static Rectangle t2=new Rectangle();
+    private static Rectangle t3=new Rectangle();
     /*make array to store each row of Rectangle photos */
     
     private final static VBox root_vBox=new VBox(space_between_rectangles);
@@ -241,6 +256,28 @@ public final class LibFX extends Application
         }
     }
 
+    //updates flag_num with +up and updates flag info 
+    private static void updateFlagInfo(int up)
+    {
+        flag_num+=up;
+        //update last flag info
+        int _l=flag_num%10;
+        int _m=(flag_num/10)%10;
+        int _f=(flag_num/100)%10;
+        
+        f3.setFill(new ImagePattern(new Image("./icons/timer"+_l+".jpg")));
+        //second digit changed
+        if((_l==0&&up==+1)||(_l==9&&up==-1))
+        {
+            f2.setFill(new ImagePattern(new Image("./icons/timer"+_m+".jpg")));
+        }
+        //first digit changed
+        if((_m==0&&up==+1)||(_m==9&&up==-1))
+        {
+            f1.setFill(new ImagePattern(new Image("./icons/timer"+_f+".jpg")));
+        }
+    }
+
     //make all rectangles on node_Game clickable and manage each click acordingly
     public static void check_for_clicks()
     {
@@ -288,6 +325,7 @@ public final class LibFX extends Application
                         //if position is already uncoverd then do nothing
                         if(Lib.positions_uncovered[I]==1) return;  
                         boardRectangle[I].setFill(new ImagePattern(new Image("./icons/flag.png")));
+                        updateFlagInfo(1);
                         counter++;
                         //check if this one is a megabomb and uncover if counter<5
                         try {
@@ -303,6 +341,7 @@ public final class LibFX extends Application
                     else
                     {     
                         if(Lib.positions_uncovered[I]==1) return;
+                        updateFlagInfo(-1);
                         counter++;
                         //add 20 since the flag is not there anymore
                         Lib.board[I]+=20;
@@ -361,6 +400,7 @@ public final class LibFX extends Application
     //(Frontend) init node_Game of collums*rows rectangle blocks
     private static VBox node_Game_init()
     {
+        
         boardRectangle = new Rectangle[Lib.rows*Lib.collums];
         HBox[] boardHBox = new HBox[Lib.rows];
         VBox vBox=new VBox(space_between_rectangles);
@@ -401,7 +441,7 @@ public final class LibFX extends Application
             // TODO Auto-generated catch block
             System.out.println("Here");
         }
-        root_vBox.getChildren().addAll(node_Menu_init(Medialab_Minesweeper));
+        root_vBox.getChildren().addAll(node_Menu_init(Medialab_Minesweeper),node_Info_init());
         //(Frontend) init node_Game of collums*rows rectangle blocks
         node_Game=node_Game_init();
         root_vBox.getChildren().addAll(node_Game);
@@ -761,6 +801,76 @@ public final class LibFX extends Application
         return menubar_Details;
     }
     
+    //(frontend) shows info
+    private static Node init_info_of(String caseR)
+    {
+        HBox hbox_bombs=new HBox(0);
+        Rectangle pad1=new Rectangle(3,21);
+        Rectangle pad2=new Rectangle(3,21);
+        pad1.setFill(Color.web("#060205"));
+        pad2.setFill(Color.web("#060205"));
+        if(caseR=="b")hbox_bombs.getChildren().addAll(b1,pad1,b2,pad2,b3);
+        else if(caseR=="f")hbox_bombs.getChildren().addAll(f1,pad1,f2,pad2,f3);
+        else hbox_bombs.getChildren().addAll(t1,pad1,t2,pad2,t3);
+        hbox_bombs.setPadding(new Insets(0, 20, 0, 0));
+        return hbox_bombs;
+    }
+
+    private static void numOfBombsToRectangle()
+    {
+        int firstR,secondR,thirdR;
+        firstR=Lib.bomb_number/100;
+        secondR=-firstR*10+Lib.bomb_number/10;
+        thirdR=-secondR*10+Lib.bomb_number;
+        System.out.println(thirdR);
+        try{
+            b1=new Rectangle(11,21);
+        b1.setFill(new ImagePattern(new Image("./icons/timer"+Integer.toString(firstR)+".jpg")));
+        b2=new Rectangle(11,21);
+        b2.setFill(new ImagePattern(new Image("./icons/timer"+Integer.toString(secondR)+".jpg")));
+        b3=new Rectangle(11,21);
+        b3.setFill(new ImagePattern(new Image("./icons/timer"+Integer.toString(thirdR)+".jpg")));
+        }
+        catch (Exception e)
+        {
+            System.out.println("Problem inserting images");
+        }
+    }
+    private static void numOfFlagsToRectangle()
+    {
+        try{
+            f1=new Rectangle(11,21);
+        f1.setFill(new ImagePattern(new Image("./icons/timer0.jpg")));
+        f2=new Rectangle(11,21);
+        f2.setFill(new ImagePattern(new Image("./icons/timer0.jpg")));
+        f3=new Rectangle(11,21);
+        f3.setFill(new ImagePattern(new Image("./icons/timer0.jpg")));
+        }
+        catch (Exception e)
+        {
+            System.out.println("Problem inserting images");
+        }
+    }
+
+    //(frontend) init info 
+    private static Node node_Info_init()
+    {
+        // pad=new Rectangle(4,21);
+        // // pad.setFill(Color.web("#060205"));
+        // pad.setFill(new ImagePattern(new Image("./icons/timer0.jpg")));
+        numOfBombsToRectangle();
+        numOfFlagsToRectangle();
+        HBox hbox_info=new HBox(0);
+        //(Frontend) init bomb number , flags , time
+        try{hbox_info.getChildren().addAll(init_info_of("b"),init_info_of("f"),init_info_of("t"));}
+        catch(Exception e)
+        {
+            System.out.println("Exception thrown while adding children to hbox_info");
+        }
+        
+        return hbox_info;
+    }
+
     //(Frontend) init node_Menu 
     private static Node node_Menu_init(Stage Medialab_Minesweeper)
     {
@@ -792,8 +902,8 @@ public final class LibFX extends Application
         root_vBox.getChildren().addAll(gp);
 
         gp.add(node_Menu_init(Medialab_Minesweeper),0,0);
-        // gp.add(node_Timers_init(),0,1);
-        gp.add(node_Game_init(),0,1);
+        gp.add(node_Info_init(),0,1);
+        gp.add(node_Game_init(),0,2);
         // gp.hide
 
 
