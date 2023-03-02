@@ -239,6 +239,7 @@ public final class LibFX extends Application
                         Lib.positions_uncovered[accurate_x_position+i]=1;
                         boardRectangle[accurate_x_position+i].setFill(new ImagePattern(new Image("./icons/sure_flag.png")));
                         Lib.board[accurate_x_position+i]-=20;
+                        updateFlagInfo(+1);
                     }
                 }
             }
@@ -259,6 +260,7 @@ public final class LibFX extends Application
                         Lib.positions_uncovered[i]=1;
                         boardRectangle[i].setFill(new ImagePattern(new Image("./icons/sure_flag.png")));
                         Lib.board[i]-=20;
+                        updateFlagInfo(+1);
                     }
                 }
             }
@@ -471,7 +473,7 @@ public final class LibFX extends Application
             Lib.startnew(Minesweeper.scenario);
         } catch (Exception e) {
             // TODO Auto-generated catch block
-            System.out.println("Here");
+            System.out.println("Exception creating new board");
         }
         root_vBox.getChildren().addAll(node_Menu_init(Medialab_Minesweeper),node_Info_init());
         //(Frontend) init node_Game of collums*rows rectangle blocks
@@ -860,7 +862,7 @@ public final class LibFX extends Application
         firstR=Lib.bomb_number/100;
         secondR=-firstR*10+Lib.bomb_number/10;
         thirdR=-secondR*10+Lib.bomb_number;
-        System.out.println(thirdR);
+        // System.out.println(thirdR);
         try{
             b1=new Rectangle(11,21);
         b1.setFill(new ImagePattern(new Image("./icons/timer"+Integer.toString(firstR)+".jpg")));
