@@ -21,6 +21,8 @@ public class Lib {
     public static int[] positions_uncovered;
     //holds the bomb positions y x 
     public static int[] bomb_positions;
+    //holds the number of rectangles that we have uncoverd (not flags and bombs)
+    public static int clickedRectangles=0;
     /*
      * collums:number of collums the board has
      * rows: number of rows the board has
@@ -273,12 +275,14 @@ public class Lib {
         }
     }
     
+    //returns an array of all the positions that changed with the click oc a rectangle
     public static ArrayList<Integer> get_positions_that_changed(int position)
     {
         //check if this positions is already uncoverd
         ArrayList<Integer> temp_array=new ArrayList<Integer>();
         //if there is a flag then remove flag
         if(board[position]<-10) board[position]+=20;
+        //check if position is already uncoverd
         if(positions_uncovered[position]==1) 
         {
             temp_array.add(-1);
@@ -286,7 +290,7 @@ public class Lib {
         }
         //add position to array
         temp_array.add(position);
-        
+        clickedRectangles++;
         //we have added this position
         positions_uncovered[position]=1;
         if(board[position]==0)
@@ -378,4 +382,5 @@ public class Lib {
         }
     }
 
+    
 }

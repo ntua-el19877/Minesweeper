@@ -54,6 +54,7 @@ public final class LibFX extends Application
     private static int rectangle_size=17;
     //private static Lib lib;
     private static int space_between_rectangles=0;
+    // private static int clickedRectangles=0;
 
     /*make row*collums array of rectangle photos */
     private static Rectangle[] boardRectangle = new Rectangle[Lib.rows*Lib.collums];
@@ -88,12 +89,14 @@ public final class LibFX extends Application
         stage.getIcons().add(minesweeper_icon);
     }
 
+    //update position i with icon s
     public static void update_position(int i,String s)
     {
         boardRectangle[i].setFill(new ImagePattern(new Image("./icons/"+s+".png")));
         return;
     }
 
+    //update position i with icon s
     public static void update_position(int i,int s)
     {
         boardRectangle[i].setFill(new ImagePattern(new Image("./icons/"+s+".png")));
@@ -126,10 +129,12 @@ public final class LibFX extends Application
         }
     }
 
+    //check what has been clicked and change the icon accordingly
     private static void clicked_position(int i) throws Exception
     {
         //if position is already uncoverd then do nothing
         if(Lib.positions_uncovered[i]==1) return;
+
         //if there is a flag then remove flag
         if(Lib.board[i]<-10) Lib.board[i]+=20;
         if(Lib.board[i]==0)
@@ -168,12 +173,14 @@ public final class LibFX extends Application
         }
         else
         {
+            Lib.clickedRectangles++;
             //System.out.println(" board[i]:"+Lib.board[i]);
             LibFX.update_position(i,Lib.board[i]);
             //uncover position
             Lib.positions_uncovered[i]=1;
         }
-        
+
+        if(Lib.clickedRectangles==Lib.board_len-Lib.bomb_number-Lib.mega_bomb){Lib.fill(Lib.positions_uncovered,1,Lib.board_len);}
     }
 
     private static void check_if_mega_bomb(int position) throws Exception
@@ -250,12 +257,14 @@ public final class LibFX extends Application
                     
                     //skip if position is already uncoverd
                     if(Lib.positions_uncovered[I]==1) return;
+                    //if there is a flag return
                     if(Lib.board[I]<-10) return;
-                    boardRectangle[I].setFill(new ImagePattern(new Image("./icons/"+Lib.board[I]+".png")));
+                    //update icon 
+                    // boardRectangle[I].setFill(new ImagePattern(new Image("./icons/"+Lib.board[I]+".png")));
                     //check what to do since we clicked on position
                     try {
                         counter++;
-                        //uncover position I
+                        //check what has been clicked and change the icon accordingly
                         clicked_position(I);
                     } catch (Exception e) {
                         // TODO Auto-generated catch block
@@ -327,7 +336,8 @@ public final class LibFX extends Application
             try 
             {
                 Lib.startnew(Minesweeper.scenario);                   
-                find_mega();
+                find_mega();//has to be removed---------------------------------------------------------------------------
+                Lib.clickedRectangles=0;
             } 
             catch (Exception e) 
             {
@@ -577,8 +587,8 @@ public final class LibFX extends Application
             return button_Finish;
     }
 
-        //create TextField:time
-        private static TextField node_timer()
+    //create TextField:time
+    private static TextField node_timer()
         {           
             final TextField tf_timer=new TextField();
             tf_timer.setPrefColumnCount(10);
