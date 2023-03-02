@@ -818,6 +818,8 @@ public final class LibFX extends Application
             public void handle(ActionEvent t)
             {
                 Lib.stopTimer();
+                //if you instantly show solutions give zero time
+                if(Lib.elapsedTime<0) Lib.elapsedTime=0;
                 Lib.saveGame("Lost");
                showAllRectangles();
                Lib.fill(Lib.positions_uncovered, 1, Lib.board_len);
@@ -847,12 +849,16 @@ public final class LibFX extends Application
         HBox hbox_bombs=new HBox(0);
         Rectangle pad1=new Rectangle(3,21);
         Rectangle pad2=new Rectangle(3,21);
+        Rectangle pad3=new Rectangle(3,21);
+        Rectangle pad4=new Rectangle(3,21);
         pad1.setFill(Color.web("#060205"));
         pad2.setFill(Color.web("#060205"));
-        if(caseR=="b")hbox_bombs.getChildren().addAll(b1,pad1,b2,pad2,b3);
-        else if(caseR=="f")hbox_bombs.getChildren().addAll(f1,pad1,f2,pad2,f3);
-        else hbox_bombs.getChildren().addAll(t1,pad1,t2,pad2,t3);
-        hbox_bombs.setPadding(new Insets(0, 20, 0, 0));
+        pad3.setFill(Color.web("#060205"));
+        pad4.setFill(Color.web("#060205"));
+        if(caseR=="b")hbox_bombs.getChildren().addAll(pad3,b1,pad1,b2,pad2,b3,pad4);
+        else if(caseR=="f")hbox_bombs.getChildren().addAll(pad3,f1,pad1,f2,pad2,f3,pad4);
+        else hbox_bombs.getChildren().addAll(pad3,t1,pad1,t2,pad2,t3,pad4);
+        hbox_bombs.setPadding(new Insets(0, 10, 0, 0));
         return hbox_bombs;
     }
 
@@ -891,6 +897,21 @@ public final class LibFX extends Application
             System.out.println("Problem inserting images");
         }
     }
+    private static void timeToRectangle()
+    {
+        try{
+            t1=new Rectangle(11,21);
+        t1.setFill(new ImagePattern(new Image("./icons/timer0.jpg")));
+        t2=new Rectangle(11,21);
+        t2.setFill(new ImagePattern(new Image("./icons/timer0.jpg")));
+        t3=new Rectangle(11,21);
+        t3.setFill(new ImagePattern(new Image("./icons/timer0.jpg")));
+        }
+        catch (Exception e)
+        {
+            System.out.println("Problem inserting images");
+        }
+    }
 
     //(frontend) init info 
     private static Node node_Info_init()
@@ -900,6 +921,7 @@ public final class LibFX extends Application
         // pad.setFill(new ImagePattern(new Image("./icons/timer0.jpg")));
         numOfBombsToRectangle();
         numOfFlagsToRectangle();
+        timeToRectangle();
         HBox hbox_info=new HBox(0);
         //(Frontend) init bomb number , flags , time
         try{hbox_info.getChildren().addAll(init_info_of("b"),init_info_of("f"),init_info_of("t"));}

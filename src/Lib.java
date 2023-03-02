@@ -311,7 +311,7 @@ public class Lib {
     }
     
     public static void startTimer(){startTime=System.currentTimeMillis();}
-    public static void stopTimer(){elapsedTime=(int) (System.currentTimeMillis()-startTime);}
+    public static void stopTimer(){elapsedTime=(int) (System.currentTimeMillis()-startTime)/1000+1;}
     /*
     creates the array or "board" that stores
     -2 for mega bomb
