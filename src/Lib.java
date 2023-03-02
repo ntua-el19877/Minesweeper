@@ -23,6 +23,10 @@ public class Lib {
     public static int[] bomb_positions;
     //holds the number of rectangles that we have uncoverd (not flags and bombs)
     public static int clickedRectangles=0;
+    //saves the time that a game is started
+    private static long startTime;
+    //saves the time of a game
+    public static long elapsedTime;
     /*
      * collums:number of collums the board has
      * rows: number of rows the board has
@@ -242,6 +246,72 @@ public class Lib {
         return board;
     }
 
+    public static String[] readGames() {
+        String[] row = new String[20];
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader("./src/game_data.txt"));
+            for(int k=0;k<4;k++)
+            {
+                
+            String line = reader.readLine();
+            
+    
+            // split the line into an array of strings
+            String[] parts = line.split(" ");
+            for (int i = 0; i < 4; i++) {
+                row[k*4+i] = parts[i];
+            }
+            }
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return row;
+    }
+
+    //save game to json
+    public static void saveGame(String gameStatus) {
+        String gameString=Integer.toString(bomb_number)+' '+Integer.toString(clickedRectangles)+' '+Long.toString(elapsedTime)+' '+gameStatus;
+        File file = new File("./src/game_data.txt");
+        try {
+            // read the existing data from the file, if it exists
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String[] lines = new String[5];
+            int numLines = 0;
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (numLines < 5) {
+                    lines[numLines] = line;
+                    numLines++;
+                }
+            }
+            reader.close();
+    
+            // add the new game to the array
+            if (numLines < 5) {
+                lines[numLines] = gameString;
+                numLines++;
+            } else {
+                for (int i = 1; i < 5; i++) {
+                    lines[i - 1] = lines[i];
+                }
+                lines[4] = gameString;
+            }
+    
+            // write the updated data to the file
+            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+            for (int i = 0; i < numLines; i++) {
+                writer.write(lines[i] + "\n");
+            }
+            writer.close();
+    
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public static void startTimer(){startTime=System.currentTimeMillis();}
+    public static void stopTimer(){elapsedTime=(int) (System.currentTimeMillis()-startTime)/1000+1;}
     /*
     creates the array or "board" that stores
     -2 for mega bomb

@@ -21,6 +21,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -46,6 +47,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import javafx.stage.Popup;
 import javafx.stage.Stage;
 
 public final class LibFX extends Application
@@ -156,9 +158,10 @@ public final class LibFX extends Application
             Lib.positions_uncovered[i]=1;
             //game over so show all bombs
             uncover_bombs(i);
-            //cant look under any other spaces
+            //if game ends stop all clicks
             Lib.fill(Lib.positions_uncovered,1,Lib.board_len);
-            
+            Lib.stopTimer();
+            Lib.saveGame("Lost");
             
         }
         else if(Lib.board[i]==-2)
@@ -168,8 +171,10 @@ public final class LibFX extends Application
             Lib.positions_uncovered[i]=1;
             //game over so show all bombs
             uncover_bombs(i);
-            //cant look under any other spaces
+            //if game ends stop all clicks
             Lib.fill(Lib.positions_uncovered,1,Lib.board_len);
+            Lib.stopTimer();
+            Lib.saveGame("Lost");
         }
         else
         {
@@ -179,8 +184,8 @@ public final class LibFX extends Application
             //uncover position
             Lib.positions_uncovered[i]=1;
         }
-
-        if(Lib.clickedRectangles==Lib.board_len-Lib.bomb_number-Lib.mega_bomb){Lib.fill(Lib.positions_uncovered,1,Lib.board_len);}
+        //if game ends stop all clicks
+        if(Lib.clickedRectangles==Lib.board_len-Lib.bomb_number-Lib.mega_bomb){Lib.fill(Lib.positions_uncovered,1,Lib.board_len);Lib.stopTimer();Lib.saveGame("Won");}
     }
 
     private static void check_if_mega_bomb(int position) throws Exception
@@ -254,7 +259,8 @@ public final class LibFX extends Application
                 
                 if (event.getButton()==MouseButton.PRIMARY)
                 {
-                    
+                    //start timer if new game
+                    if(counter==0) Lib.startTimer();
                     //skip if position is already uncoverd
                     if(Lib.positions_uncovered[I]==1) return;
                     //if there is a flag return
@@ -274,6 +280,8 @@ public final class LibFX extends Application
                 }
                 if ((event.getButton()==MouseButton.SECONDARY))
                 {
+                    //start timer if new game
+                    if(counter==0) Lib.startTimer();
                     //if there is no flag
                     if(Lib.board[I]>-10)
                     { 
@@ -666,16 +674,87 @@ public final class LibFX extends Application
         return menubar_Application;
     }
 
+    //make a list from all the i*4+_position items in arr
+    private static VBox listItemsToVBox(int _position,String Title,String[] arr)
+    {
+        Text textTitle= new Text(Title);
+        Text text1= new Text(arr[_position]);
+        Text text2= new Text(arr[_position+4]);
+        Text text3= new Text(arr[_position+8]);
+        Text text4= new Text(arr[_position+12]);
+        Text text5= new Text(arr[_position+16]);
+        VBox vboxList=createVBox(5,textTitle,text1,text2,text3,text4,text5 );
+        return vboxList;}
+
+    //(frontend) creates popup with Round info
+    private static MenuItem menuitem_Rounds(){
+        MenuItem menuitem_Rounds = new MenuItem("Rounds");
+
+        // MenuItem menuitem_Rounds=new MenuItem("Create");
+        menuitem_Rounds.setOnAction(new EventHandler <ActionEvent>()
+        {
+            public void handle(ActionEvent t)
+            {
+                Stage _stage=new Stage();
+                Group _root=new Group();
+                Scene _scene=new Scene(
+                    _root);
+                String[] arr=Lib.readGames();
+                HBox hbox_Rounds=createHBox(20,listItemsToVBox(0,"Bombs",arr),listItemsToVBox(1,"Number of tries",arr),listItemsToVBox(2,"Time",arr),listItemsToVBox(3,"Game status",arr));
+                hbox_Rounds.setPadding(new Insets(10));
+                _stage.setResizable(false);
+                _stage.setTitle("Last Rounds");
+                _root.getChildren().addAll(hbox_Rounds);
+                _stage.setScene(_scene);
+                _stage.show();
+            }
+        });
+        return menuitem_Rounds;
+
+        // return menuitem_Rounds;
+    }
+
+    //uncover all rectangles
+    private static void showAllRectangles()
+    {
+        for(int i=0;i<Lib.board_len;i++)
+        {
+            
+                //1:ucover all bombs with no flag
+                //2:uncover all mega Bombs with no flag
+                //3:replace all false placed flags
+                if(Lib.board[i]==-1 || Lib.board[i]==-21)    boardRectangle[i].setFill(new ImagePattern(new Image("./icons/flag.png")));
+                else if(Lib.board[i]==-2|| Lib.board[i]==-22)    boardRectangle[i].setFill(new ImagePattern(new Image("./icons/mega_bomb_flag.png")));
+                else boardRectangle[i].setFill(new ImagePattern(new Image("./icons/"+Lib.board[i]+".png")));
+            
+        }
+    }
+
+    //(frontend) show solution and add game to lost games
+    private static MenuItem menuitem_Solution(){
+        MenuItem menuitem_Solution = new MenuItem("Solution");
+        menuitem_Solution.setOnAction(new EventHandler <ActionEvent>()
+        {
+            public void handle(ActionEvent t)
+            {
+                Lib.stopTimer();
+                Lib.saveGame("Lost");
+               showAllRectangles();
+               Lib.fill(Lib.positions_uncovered, 1, Lib.board_len);
+               
+            }
+        });
+        return menuitem_Solution;
+    }
+
     //(Frontend) init menubar_Details 
     private static Node menubar_Details()
     {
         MenuBar menubar_Details=new MenuBar();
         Menu menu = new Menu("Details");
-        MenuItem menuitem_Start = new MenuItem("Rounds");
-        MenuItem menuitem_Load = new MenuItem("Solution");
-        
-        menu.getItems().add(menuitem_Start);
-        menu.getItems().add(menuitem_Load);
+
+        menu.getItems().add(menuitem_Rounds());
+        menu.getItems().add(menuitem_Solution());
         menubar_Details.getMenus().add(menu);
         menu.setStyle("-fx-background-color: #d6d6d6; ");
         menubar_Details.setStyle("-fx-background-color: #d6d6d6; ");
@@ -713,6 +792,7 @@ public final class LibFX extends Application
         root_vBox.getChildren().addAll(gp);
 
         gp.add(node_Menu_init(Medialab_Minesweeper),0,0);
+        // gp.add(node_Timers_init(),0,1);
         gp.add(node_Game_init(),0,1);
         // gp.hide
 
