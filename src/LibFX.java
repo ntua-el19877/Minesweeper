@@ -574,11 +574,12 @@ public final class LibFX extends Application
         for (final File fileEntry : folder.listFiles()) {
             if (fileEntry.isDirectory()) {
                 menuitem_Load_New_Game(fileEntry,Medialab_Minesweeper);
-                flag_num=0;
-                updateFlagInfo(0);
+                
                 oneSecondWonder.stop();
                 gameTime=0;
                 updateTimeInfo(0);
+                flag_num=0;
+                updateFlagInfo(0);
             } 
             else 
             {
@@ -588,6 +589,8 @@ public final class LibFX extends Application
                 oneSecondWonder.stop();
                 gameTime=0;
                 updateTimeInfo(0);
+                flag_num=0;
+                updateFlagInfo(0);
             }
         }
         return menu_Load;
