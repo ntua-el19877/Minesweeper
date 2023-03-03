@@ -3,6 +3,7 @@ package src;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+// import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
@@ -11,6 +12,8 @@ import javax.swing.Action;
 
 import org.w3c.dom.events.MouseEvent;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.beans.property.ObjectProperty;
 import javafx.event.ActionEvent;
@@ -50,6 +53,8 @@ import javafx.scene.text.Text;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 
+import javafx.util.Duration;
+
 public final class LibFX extends Application
 {
     private static int width_scene_Create_Scenario=150,height_scene_Create_Scenario=280;
@@ -83,7 +88,13 @@ public final class LibFX extends Application
     private static Node node_Game;
     private final Scene scene1=new Scene(root_vBox);
     public static int counter=0;
-
+    static Timeline oneSecondWonder = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
+        @Override
+        public void handle(ActionEvent event) {
+            updateTimeInfo(-1);
+        }
+    }));
+    static int gameTime=0;
     public static String String_name;
     public static String String_difficulty ="1";
     public static String String_bombs="0";
@@ -187,6 +198,7 @@ public final class LibFX extends Application
             Lib.fill(Lib.positions_uncovered,1,Lib.board_len);
             Lib.stopTimer();
             Lib.saveGame("Lost");
+            oneSecondWonder.stop();
             
         }
         else if(Lib.board[i]==-2)
@@ -200,6 +212,7 @@ public final class LibFX extends Application
             Lib.fill(Lib.positions_uncovered,1,Lib.board_len);
             Lib.stopTimer();
             Lib.saveGame("Lost");
+            oneSecondWonder.stop();
         }
         else
         {
@@ -210,7 +223,11 @@ public final class LibFX extends Application
             Lib.positions_uncovered[i]=1;
         }
         //if game ends stop all clicks
-        if(Lib.clickedRectangles==Lib.board_len-Lib.bomb_number-Lib.mega_bomb){Lib.fill(Lib.positions_uncovered,1,Lib.board_len);Lib.stopTimer();Lib.saveGame("Won");}
+        if(Lib.clickedRectangles==Lib.board_len-Lib.bomb_number-Lib.mega_bomb){
+            Lib.fill(Lib.positions_uncovered,1,Lib.board_len);
+            Lib.stopTimer();Lib.saveGame("Won");
+            oneSecondWonder.stop();
+        }
     }
 
     private static void check_if_mega_bomb(int position) throws Exception
@@ -266,6 +283,33 @@ public final class LibFX extends Application
             }
 
         }
+    }
+
+    //updates time info with +1 and updates time info 
+    private static void updateTimeInfo(int n)
+    {
+        if(n==0){t1.setFill(new ImagePattern(new Image("./icons/timer0.jpg")));
+        t2.setFill(new ImagePattern(new Image("./icons/timer0.jpg")));
+        t3.setFill(new ImagePattern(new Image("./icons/timer0.jpg")));
+        return;}
+        gameTime++;
+        //update last flag info
+        int _l=gameTime%10;
+        int _m=(gameTime/10)%10;
+        int _f=(gameTime/100)%10;
+        
+        t3.setFill(new ImagePattern(new Image("./icons/timer"+_l+".jpg")));
+        //second digit changed
+        if(_l==0)
+        {
+            t2.setFill(new ImagePattern(new Image("./icons/timer"+_m+".jpg")));
+        }
+        //first digit changed
+        if(_m==0)
+        {
+            t1.setFill(new ImagePattern(new Image("./icons/timer"+_f+".jpg")));
+        }
+        return;
     }
 
     //updates flag_num with +up and updates flag info 
@@ -328,7 +372,12 @@ public final class LibFX extends Application
                 if (event.getButton()==MouseButton.PRIMARY)
                 {
                     //start timer if new game
-                    if(counter==0) Lib.startTimer();
+                    if(counter==0) {
+                        Lib.startTimer();
+                        updateTimeInfo(-1);
+                        oneSecondWonder.setCycleCount(Timeline.INDEFINITE);
+                        oneSecondWonder.play();
+                    }
                     //skip if position is already uncoverd
                     if(Lib.positions_uncovered[I]==1) return;
                     //if there is a flag return
@@ -349,7 +398,12 @@ public final class LibFX extends Application
                 if ((event.getButton()==MouseButton.SECONDARY))
                 {
                     //start timer if new game
-                    if(counter==0) Lib.startTimer();
+                    if(counter==0) {
+                        Lib.startTimer();
+                        updateTimeInfo(-1);
+                        oneSecondWonder.setCycleCount(Timeline.INDEFINITE);
+                        oneSecondWonder.play();
+                    }
                     //if there is no flag
                     if(Lib.board[I]>-10)
                     { 
@@ -416,7 +470,9 @@ public final class LibFX extends Application
                 Lib.startnew(Minesweeper.scenario);                   
                 find_mega();//has to be removed---------------------------------------------------------------------------
                 Lib.clickedRectangles=0;
-                
+                oneSecondWonder.stop();
+                gameTime=0;
+                updateTimeInfo(0);
                 flag_num=0;
                 updateFlagInfo(0);
             } 
@@ -520,12 +576,18 @@ public final class LibFX extends Application
                 menuitem_Load_New_Game(fileEntry,Medialab_Minesweeper);
                 flag_num=0;
                 updateFlagInfo(0);
+                oneSecondWonder.stop();
+                gameTime=0;
+                updateTimeInfo(0);
             } 
             else 
             {
                 //(Frontend & Backend) init a new scenario if it is clicked
                 //add all scenarios in menu_Load from where you can chose one
                 menu_Load.getItems().add(init_scenario(fileEntry,Medialab_Minesweeper));
+                oneSecondWonder.stop();
+                gameTime=0;
+                updateTimeInfo(0);
             }
         }
         return menu_Load;
@@ -821,6 +883,7 @@ public final class LibFX extends Application
                 //if you instantly show solutions give zero time
                 if(Lib.elapsedTime<0) Lib.elapsedTime=0;
                 Lib.saveGame("Lost");
+                oneSecondWonder.stop();
                showAllRectangles();
                Lib.fill(Lib.positions_uncovered, 1, Lib.board_len);
                
