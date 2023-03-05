@@ -58,7 +58,7 @@ public class Lib {
             bomb_number=scanner.nextInt();
             available_time=scanner.nextInt();
             mega_bomb=scanner.nextInt();
-            if(scanner.hasNextInt()) throw new Exception("Exception message");
+            if(scanner.hasNextInt()) throw new Exception("Exception : Has to many inputs");
             //for (int i =0;i<4;i++)
             //{
             //    scenario_numbers[i]=scanner.nextInt();

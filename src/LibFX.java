@@ -19,6 +19,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -36,6 +37,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.BorderStrokeStyle;
@@ -43,6 +46,7 @@ import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -67,6 +71,8 @@ public final class LibFX extends Application
     /*make row*collums array of rectangle photos */
     private static Rectangle[] boardRectangle = new Rectangle[Lib.rows*Lib.collums];
 
+    //     // Create a Region object to wrap the node
+    //    static Region region = new Region();
     //these rectangles will hold info about the info screen
     //b are for the bomb numbers
     //f are for the flag numbers
@@ -87,6 +93,7 @@ public final class LibFX extends Application
 
     private static Node node_Game;
     private final Scene scene1=new Scene(root_vBox);
+    
     public static int counter=0;
     static Timeline oneSecondWonder = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
         @Override
@@ -223,7 +230,7 @@ public final class LibFX extends Application
             Lib.positions_uncovered[i]=1;
         }
         //if game ends stop all clicks
-        if(Lib.clickedRectangles==Lib.board_len-Lib.bomb_number-Lib.mega_bomb){
+        if(Lib.clickedRectangles==Lib.board_len-Lib.bomb_number){
             Lib.fill(Lib.positions_uncovered,1,Lib.board_len);
             Lib.stopTimer();Lib.saveGame("Won");
             oneSecondWonder.stop();
@@ -475,6 +482,7 @@ public final class LibFX extends Application
                 updateTimeInfo(0);
                 flag_num=0;
                 updateFlagInfo(0);
+                // showAllBombs();
             } 
             catch (Exception e) 
             {
@@ -509,11 +517,12 @@ public final class LibFX extends Application
             }
             vBox.getChildren().addAll(boardHBox[i]);
         }
-        vBox.setStyle("-fx-background-color: white;"
-                            + "-fx-border-color: grey;"
-                            + "-fx-border-width: 3;"
-                            + "-fx-border-radius: 1;"
-                            + "-fx-padding: 6;");
+        
+        vBox.setStyle("-fx-background-color: #d6d6d6;"
+                            + "-fx-border-color: #d6d6d6;"
+                            + "-fx-border-width: 8;"
+                            + "-fx-border-radius: 0;"
+                            + "-fx-padding: 0;");
         return vBox;
     }
 
@@ -810,8 +819,8 @@ public final class LibFX extends Application
         menu.getItems().add(menuitem_Exit());
         menubar_Application.getMenus().add(menu);
 
-        menu.setStyle("-fx-background-color: #d6d6d6; ");
-        menubar_Application.setStyle("-fx-background-color: #d6d6d6; ");
+        menu.setStyle("-fx-background-color: #C3C3C3; ");
+        menubar_Application.setStyle("-fx-background-color: #C3C3C3; ");
         return menubar_Application;
     }
 
@@ -870,10 +879,29 @@ public final class LibFX extends Application
                 //3:replace all false placed flags
                 if(Lib.board[i]==-1 || Lib.board[i]==-21)    boardRectangle[i].setFill(new ImagePattern(new Image("./icons/flag.png")));
                 else if(Lib.board[i]==-2|| Lib.board[i]==-22)    boardRectangle[i].setFill(new ImagePattern(new Image("./icons/mega_bomb_flag.png")));
-                else boardRectangle[i].setFill(new ImagePattern(new Image("./icons/"+Lib.board[i]+".png")));
+                else {
+                    if(Lib.board[i]<-10)    Lib.board[i]+=20; 
+                    boardRectangle[i].setFill(new ImagePattern(new Image("./icons/"+Lib.board[i]+".png")));}
             
         }
     }
+        //uncover all rectangles
+        private static void showAllBombs()
+        {
+            for(int i=0;i<Lib.board_len;i++)
+            {
+                
+                    //1:ucover all bombs with no flag
+                    //2:uncover all mega Bombs with no flag
+                    //3:replace all false placed flags
+                    if(Lib.board[i]==-1 || Lib.board[i]==-21)    boardRectangle[i].setFill(new ImagePattern(new Image("./icons/flag.png")));
+                    else if(Lib.board[i]==-2|| Lib.board[i]==-22)    boardRectangle[i].setFill(new ImagePattern(new Image("./icons/mega_bomb_flag.png")));
+                    // else {
+                    //     if(Lib.board[i]<-10)    Lib.board[i]+=20; 
+                    //     boardRectangle[i].setFill(new ImagePattern(new Image("./icons/"+Lib.board[i]+".png")));}
+                
+            }
+        }
 
     //(frontend) show solution and add game to lost games
     private static MenuItem menuitem_Solution(){
@@ -904,8 +932,8 @@ public final class LibFX extends Application
         menu.getItems().add(menuitem_Rounds());
         menu.getItems().add(menuitem_Solution());
         menubar_Details.getMenus().add(menu);
-        menu.setStyle("-fx-background-color: #d6d6d6; ");
-        menubar_Details.setStyle("-fx-background-color: #d6d6d6; ");
+        menu.setStyle("-fx-background-color: #C3C3C3; ");
+        menubar_Details.setStyle("-fx-background-color: #C3C3C3; ");
         return menubar_Details;
     }
     
@@ -924,7 +952,12 @@ public final class LibFX extends Application
         if(caseR=="b")hbox_bombs.getChildren().addAll(pad3,b1,pad1,b2,pad2,b3,pad4);
         else if(caseR=="f")hbox_bombs.getChildren().addAll(pad3,f1,pad1,f2,pad2,f3,pad4);
         else hbox_bombs.getChildren().addAll(pad3,t1,pad1,t2,pad2,t3,pad4);
-        hbox_bombs.setPadding(new Insets(0, 10, 0, 0));
+        hbox_bombs.setPadding(new Insets(0, 8, 0, 0));
+        hbox_bombs.setStyle(
+                             "-fx-border-color: black;"
+                            + "-fx-border-width: 2;"
+                            + "-fx-border-radius: 0;"
+                            + "-fx-padding: 0;");
         return hbox_bombs;
     }
 
@@ -990,12 +1023,18 @@ public final class LibFX extends Application
         timeToRectangle();
         HBox hbox_info=new HBox(0);
         //(Frontend) init bomb number , flags , time
-        try{hbox_info.getChildren().addAll(init_info_of("b"),init_info_of("f"),init_info_of("t"));}
+        Rectangle rec=new Rectangle(8,8);
+        rec.setFill(Color.web("#d6d6d6"));
+        try{hbox_info.getChildren().addAll(rec,init_info_of("b"),init_info_of("f"),init_info_of("t"));}
         catch(Exception e)
         {
             System.out.println("Exception thrown while adding children to hbox_info");
         }
-        
+        hbox_info.setStyle("-fx-background-color: #d6d6d6;"
+                            + "-fx-border-color: #d6d6d6;"
+                            + "-fx-border-width: 0;"
+                            + "-fx-border-radius: 0;"
+                            + "-fx-padding: 0;");
         return hbox_info;
     }
 
@@ -1003,8 +1042,16 @@ public final class LibFX extends Application
     private static Node node_Menu_init(Stage Medialab_Minesweeper)
     {
         HBox hbox_menu=new HBox(0);
+        
+        
         //(Frontend) init menubar_Application and menubar_Details and add them to node_Menu
         hbox_menu.getChildren().addAll(menubar_Application(Medialab_Minesweeper),menubar_Details());
+        hbox_menu.setStyle("-fx-background-color: #d6d6d6;"
+                            + "-fx-border-color: #d6d6d6;"
+                            + "-fx-border-width: 8;"
+                            + "-fx-border-radius: 0;"
+                            + "-fx-border-style: solid solid hidden solid;"
+                            + "-fx-padding: 0;");
         return hbox_menu;
     }
 
@@ -1026,32 +1073,39 @@ public final class LibFX extends Application
         {
             System.out.println("Error initializing Medialab_Minesweeper");
         }
+        // scene1.setFill(Color.RED);
         Lib.startnew(Minesweeper.scenario);
         root_vBox.getChildren().addAll(gp);
-
+        // double scene1Width = scene1.getWidth();
         gp.add(node_Menu_init(Medialab_Minesweeper),0,0);
         gp.add(node_Info_init(),0,1);
         gp.add(node_Game_init(),0,2);
-        // gp.hide
 
 
-        // //(Frontend) init node_Menu and add it to root
-        // root_vBox.getChildren().addAll(node_Menu_init(Medialab_Minesweeper));
+// center the node in the second row and first column
+GridPane.setHalignment(node_Info_init(), HPos.CENTER);
+        // // Create a Pane object and add the GridPane to it
+        // Pane pane = new Pane();
+        // pane.getChildren().add(gp);
         
-        // //(Frontend) init node_Game of collums*rows rectangle blocks and add it to root
-        // root_vBox.getChildren().addAll(node_Game_init());
-        // root_vBox.setStyle("-fx-background-color: #d6d6d6;");
+        // // Set the background of the Region object to red
+        // pane.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
         
-        // TextField tf1=new TextField("1");
-        // TextField tf2=new TextField("2");
-        // TextField tf3=new TextField("3");
-        // gp.add(tf1,0,0);
-        // gp.add(tf2,1,1);
-        // gp.setRowIndex(tf1, 0);
-        // gp.setRowIndex(tf2, 1);
-        // gp.setRowIndex(tf3, 2);
+        // // Set the preferred width of the Region object to USE_COMPUTED_SIZE
+        // pane.setPrefWidth(Region.USE_COMPUTED_SIZE);
         
-        //make all rectangles on node_Game clickable and manage each click acordingly
+        // // Set the preferred height of the Region object to the height of the node
+        // pane.setPrefHeight(gp.getHeight());
+        
+
+        // // Add the node to the Region object
+        // region.getChildren().add(gp);
+        // Add the Pane object to the Region object
+        // pane.getChildren().add(gp);
+        // Create the scene with the Region object as its root node
+        //  Scene scene1 = Scene(pane, 400, 400);
+        
+        
         check_for_clicks();
         find_mega();
         scene1.setFill(Color.web("#d6d6d6"));
