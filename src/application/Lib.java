@@ -29,7 +29,7 @@ public class Lib {
     private static long startTime;
     //saves the time of a game
     public static long elapsedTime;
-    static File parentDir = new File("C:/Users/Aggelos/eclipse-workspace/Minesweeper");
+    static File parentDir = new File(System.getProperty("user.dir"));
     public static String scenario=null;
     /*
      * collums:number of collums the board has

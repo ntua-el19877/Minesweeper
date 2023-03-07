@@ -46,7 +46,7 @@ public class Main extends Application
     //private static Lib lib;
     private static int space_between_rectangles=0;
     // private static int uncoverdRectangles=0;
-    static File parentDir = new File("C:/Users/Aggelos/eclipse-workspace/Minesweeper");
+    static File parentDir = new File(System.getProperty("user.dir"));
     static int flag_num=0;
     /*make row*collums array of rectangle photos */
     private static Rectangle[] boardRectangle = new Rectangle[Lib.rows*Lib.collums];
