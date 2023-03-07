@@ -1,4 +1,4 @@
-package src;
+package application;
 
 // Java Program to illustrate Reading text file aand returning array[] with scenario info
  
@@ -22,11 +22,15 @@ public class Lib {
     //holds the bomb positions y x 
     public static int[] bomb_positions;
     //holds the number of rectangles that we have uncoverd (not flags and bombs)
+    public static int uncoverdRectangles=0;
+  //holds the number of rectangles that we have left clicked (not flags and bombs)
     public static int clickedRectangles=0;
     //saves the time that a game is started
     private static long startTime;
     //saves the time of a game
     public static long elapsedTime;
+    static File parentDir = new File("C:/Users/Aggelos/eclipse-workspace/Minesweeper");
+    public static String scenario=null;
     /*
      * collums:number of collums the board has
      * rows: number of rows the board has
@@ -44,7 +48,7 @@ public class Lib {
         //int scenario_numbers[]=new int[6];
 
         // File path is passed as parameter
-        String scenario_id_file = new String("./src/SCENARIOS/" + string );
+        String scenario_id_file = new File(parentDir, "src/SCENARIOS/"+string).getAbsolutePath();
  
         // Note:  Double backquote is to avoid compiler
         // interpret words
@@ -63,21 +67,23 @@ public class Lib {
             //{
             //    scenario_numbers[i]=scanner.nextInt();
             //}
-           
+//            System.out.println(scenario_id_file);
+//            System.out.println(game_difficulty);
         }
         catch(Exception BufferedReader1)
         {
             System.out.println("InvalidDescriptionException occured while reading "+string);
+            
         }
         //return scenario_numbers;
         
     }
     
-    private static int[] read_scenario_margins()
+    private static int[] read_scenario_margins() throws Exception
     {
         int scenario_numbers_margins[]=new int[8];
         //read SCENARIO-ID-DIFFICULTY-MARGINS to throw exceptions if needed
-        String scenario_id_dif_margins_file=new String("./src/medialab/SCENARIO-" + game_difficulty + "-DIFFICULTY-MARGINS.txt");
+        String scenario_id_dif_margins_file=new File(parentDir, "src/medialab/SCENARIO-"+ game_difficulty + "-DIFFICULTY-MARGINS.txt").getAbsolutePath();
         
         try(Scanner scanner = new Scanner(new File(scenario_id_dif_margins_file))) {
             /*
@@ -96,6 +102,8 @@ public class Lib {
         catch(Exception BufferedReader2)
         {
             System.out.println("InvalidDescriptionException occured while reading SCENARIO-"+game_difficulty+"-DIFFICULTY-MARGINS.txt");
+            //if any exception is thrown init SCENARIO-1
+            startnew("SCENARIO-1.txt");
         }
         return scenario_numbers_margins;
     }
@@ -114,7 +122,7 @@ public class Lib {
     }
     
     // main driver method
-    public static void ReadFile(String string) throws Exception
+    private static void ReadFile(String string) throws Exception
     {
           
         //int scenario_numbers[]=new int[6];
@@ -149,7 +157,15 @@ public class Lib {
         return true;
     }
 
-    //fill array whith number
+    /**
+     * 
+     * Fills an array with a value 
+     * 
+     * @param arr is the array that will be filled
+     * @param num is the value with which the array will be filled
+     * @param range is the number of items that will change starting from the position 0
+     * @return returns the filled array
+     */
     public static int[] fill(int[] arr,int num,int range)
     {
         try
@@ -166,10 +182,10 @@ public class Lib {
         return arr;
     }
 
-    public static int[] create_bomb_positions() throws FileNotFoundException
+    private static int[] create_bomb_positions() throws FileNotFoundException
     {   
         //clear file i want to write in
-        clear_file("./src/mine.txt");
+        clear_file(new File(parentDir,"src/mine.txt").getAbsolutePath());
         int range=rows*collums;
         //save positions y*collums+x for each bomb in arr
         int[] arr=new int[bomb_number];
@@ -203,7 +219,7 @@ public class Lib {
             else str+="0\n";
             try {
                 Files.write(
-                    Paths.get("./src/mine.txt"),
+                    Paths.get(new File(parentDir, "src/mine.txt").getAbsolutePath()),
                      str.getBytes(), StandardOpenOption.APPEND);
             }catch (IOException e) {
                 System.out.println("Error writing on mine.txt");
@@ -246,10 +262,15 @@ public class Lib {
         return board;
     }
 
+    
+    /**
+     * Reads all games played that are stored inside game_data.txt.
+     * @return returns an array of 20 elements (5 games) where each game played has 4 elements.
+     */
     public static String[] readGames() {
         String[] row = new String[20];
         try {
-            BufferedReader reader = new BufferedReader(new FileReader("./src/game_data.txt"));
+            BufferedReader reader = new BufferedReader(new FileReader(new File(parentDir, "src/game_data.txt").getAbsolutePath()));
             for(int k=0;k<5;k++)
             {
                 
@@ -269,10 +290,13 @@ public class Lib {
         return row;
     }
 
-    //save game to json
+    /**
+     * Inserts the last game info into game_data.txt.
+     * @param gameStatus is either "Won" or "Lost"
+     */
     public static void saveGame(String gameStatus) {
         String gameString=Integer.toString(bomb_number)+' '+Integer.toString(clickedRectangles)+' '+Long.toString(elapsedTime)+' '+gameStatus;
-        File file = new File("./src/game_data.txt");
+        File file = new File(parentDir,"src/game_data.txt");
         try {
             // read the existing data from the file, if it exists
             BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -309,8 +333,13 @@ public class Lib {
             e.printStackTrace();
         }
     }
-    
+    /**
+     * Starts a timer.
+     */
     public static void startTimer(){startTime=System.currentTimeMillis();}
+    /**
+     * Stops a timer.
+     */
     public static void stopTimer(){elapsedTime=(int) (System.currentTimeMillis()-startTime)/1000+1;}
     /*
     creates the array or "board" that stores
@@ -318,21 +347,38 @@ public class Lib {
     -1 for bomb
     and n >=0 for touching n bombs
     */ 
-    public static int[] board_creator(int[] bomb_array)
+    private static int[] board_creator(int[] bomb_array)
     {
-        board_len=rows*collums;
-        //fill array with 0= coverd
-        positions_uncovered=new int[board_len];
-        Lib.fill(positions_uncovered,0,board_len);
-        //create the "board"
-        board=new int[board_len];
-        //fill board with zeros(zero=touching 0 bombs)
-        Lib.fill(board,0,board_len);
-        //System.out.println("BoardLen:"+board_len);
-        board=arr_insert_bombs(board,bomb_array);
-        return board;
+    	try {
+
+            board_len=rows*collums;
+            //fill array with 0= coverd
+            positions_uncovered=new int[board_len];
+            Lib.fill(positions_uncovered,0,board_len);
+            //create the "board"
+            board=new int[board_len];
+            //fill board with zeros(zero=touching 0 bombs)
+            Lib.fill(board,0,board_len);
+            //System.out.println("BoardLen:"+board_len);
+            board=arr_insert_bombs(board,bomb_array);
+            
+    	}
+    	catch(Exception e)
+    	{
+    		System.out.println("Exception creating new board");
+    	}
+    	return board;
     }
-    public static void print_board(int[] board)
+    
+    /**
+     * Prints the values of the board for the user to see.<br>
+     * If the printed number is:<br>
+     * 		&nbsp;n>=0 then it is a position with n bombs touching it.<br>
+     * 		&nbsp;n=-1 then it is a position where a bomb is.<br>
+     * 		&nbsp;n=-2 then it is a position where a mega bomb lies.<br>
+     * 		&nbsp;n<-10 then is is a position with a flag
+     */
+    public static void print_board()
     {
         for(int i=0;i<rows;i++)
         {
@@ -343,9 +389,17 @@ public class Lib {
             }
             System.out.print("\n");
         }
+        System.out.print("\n");
     }
     
     //returns an array of all the positions that changed with the click oc a rectangle
+    
+    /**
+     * Finds which positions changed on a click.  
+     * 
+     * @param position position that has been changed
+     * @return returns an ArrayList of all the positions that updated next to it
+     */
     public static ArrayList<Integer> get_positions_that_changed(int position)
     {
         //check if this positions is already uncoverd
@@ -355,7 +409,7 @@ public class Lib {
             // System.out.println(position);
             board[position]+=20;
             // System.out.println(LibFX.flag_num);
-            LibFX.flag_num=LibFX.flag_num-1;
+            Main.flag_num=Main.flag_num-1;
             // System.out.println(LibFX.flag_num);
 
         }
@@ -367,7 +421,7 @@ public class Lib {
         }
         //add position to array
         temp_array.add(position);
-        clickedRectangles++;
+        uncoverdRectangles++;
         //we have added this position
         positions_uncovered[position]=1;
         if(board[position]==0)
@@ -420,33 +474,49 @@ public class Lib {
     
     }
     
+    /**Initializes the new game variables from the scenario that is chosen
+     * 
+     * @param scenario is the name of the file that will be read to start a new game
+     * @throws Exception Exception starting new game
+     * 
+     */
     public static void startnew(String scenario) throws Exception
     {
-        if(Minesweeper.scenario==null) Minesweeper.scenario="SCENARIO-1.txt";
-        ReadFile(Minesweeper.scenario);
+    	try {
+        if(scenario==null) scenario="SCENARIO-1.txt";
+        ReadFile(scenario);
         bomb_positions=new int[2*bomb_number];        
         //save bomb positions in file and in arr
         create_bomb_positions(); 
-        LibFX.counter=0;
-        board =board_creator(bomb_positions);
-        //System.out.println(Lib.board[2]);
-        print_board(board);
+        Main.counter=0;
+
+   	 board =board_creator(bomb_positions);
+    	}
+    	catch(Exception e)
+    	{
+    		System.out.println("Exception starting new game");
+    	}
+    	uncoverdRectangles=0;
+        clickedRectangles=0;
     }
 
+    /**
+     * Creates a .txt file and adds info of a new scenario in it.
+     */
     public static void write_file() {
         try {
-            System.out.println(LibFX.String_name);
-            File myObj = new File("./src/SCENARIOS/"+LibFX.String_name+".txt");
+            System.out.println(Main.String_name);
+            File myObj = new File(parentDir,"src/SCENARIOS/"+Main.String_name+".txt");
             if (myObj.createNewFile()) {
                 System.out.println("File created: " + myObj.getName());
             
             //clears mine.txt
-            PrintWriter writer = new PrintWriter("./src/SCENARIOS/"+LibFX.String_name+".txt");
-            writer.println(LibFX.String_difficulty);
-            writer.println(LibFX.String_bombs);
-            writer.println(LibFX.String_timer);
+            PrintWriter writer = new PrintWriter(new File(parentDir,"src/SCENARIOS/"+Main.String_name+".txt"));
+            writer.println(Main.String_difficulty);
+            writer.println(Main.String_bombs);
+            writer.println(Main.String_timer);
             //writer.println(301);
-            writer.println(LibFX.String_has_mega_bomb);
+            writer.println(Main.String_has_mega_bomb);
             writer.close();
         } 
         else {

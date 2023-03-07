@@ -1,23 +1,15 @@
-package src;
+
+
+package application;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 // import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Scanner;
-import java.util.concurrent.TimeUnit;
-
-import javax.swing.Action;
-
-import org.w3c.dom.events.MouseEvent;
-
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.beans.property.ObjectProperty;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -25,9 +17,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -37,36 +27,26 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.Border;
-import javafx.scene.layout.BorderStroke;
-import javafx.scene.layout.BorderStrokeStyle;
-import javafx.scene.layout.BorderWidths;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
-import javafx.stage.Popup;
 import javafx.stage.Stage;
 
 import javafx.util.Duration;
 
-public final class LibFX extends Application
+public class Main extends Application
 {
     private static int width_scene_Create_Scenario=150,height_scene_Create_Scenario=280;
     private static int rectangle_size=17;
     //private static Lib lib;
     private static int space_between_rectangles=0;
-    // private static int clickedRectangles=0;
-
+    // private static int uncoverdRectangles=0;
+    static File parentDir = new File("C:/Users/Aggelos/eclipse-workspace/Minesweeper");
     static int flag_num=0;
     /*make row*collums array of rectangle photos */
     private static Rectangle[] boardRectangle = new Rectangle[Lib.rows*Lib.collums];
@@ -119,22 +99,24 @@ public final class LibFX extends Application
         stage.setTitle("Minesweeper");
         stage.setResizable(false);
         /*minesweeper icon */
-        Image minesweeper_icon=new Image(new File(
-            ".\\icons\\minesweeper_icon.png").toURI().toURL().toExternalForm());
+        Image minesweeper_icon=new Image(new File(parentDir,
+            "icons/minesweeper_icon.png").toURI().toURL().toExternalForm());
         stage.getIcons().add(minesweeper_icon);
     }
 
     //update position i with icon s
-    public static void update_position(int i,String s)
+    private static void update_position(int i,String s)
     {
-        boardRectangle[i].setFill(new ImagePattern(new Image("./icons/"+s+".png")));
+    	String imageFile = new File(parentDir, "icons/"+s+".png").getAbsolutePath();
+        boardRectangle[i].setFill(new ImagePattern(new Image(imageFile)));
         return;
     }
 
     //update position i with icon s
-    public static void update_position(int i,int s)
+    private static void update_position(int i,int s)
     {
-        boardRectangle[i].setFill(new ImagePattern(new Image("./icons/"+s+".png")));
+    	String imageFile = new File(parentDir, "icons/"+s+".png").getAbsolutePath();
+        boardRectangle[i].setFill(new ImagePattern(new Image(imageFile)));
         return;
     }
 
@@ -149,14 +131,17 @@ public final class LibFX extends Application
             {
                 //1:ucover all bombs with no flag
                 //2:uncover all mega Bombs with no flag
-                //3:replace all false placed flags
-                if(Lib.board[i]==-1)    boardRectangle[i].setFill(new ImagePattern(new Image("./icons/-1.png")));
-                else if(Lib.board[i]==-2)    boardRectangle[i].setFill(new ImagePattern(new Image("./icons/-2.png")));
+                //3:replace all false placed flags 
+                if(Lib.board[i]==-1)    boardRectangle[i].setFill(new ImagePattern(new Image(
+                		new File(parentDir, "icons/-1.png").getAbsolutePath())));
+                else if(Lib.board[i]==-2)    boardRectangle[i].setFill(new ImagePattern(new Image(
+                		new File(parentDir, "icons/-2.png").getAbsolutePath())));
                 else if(Lib.board[i]<-3 )
                 {
                     if(Lib.board[i]!=-21) 
                     {
-                        if(Lib.board[i]!=-22) boardRectangle[i].setFill(new ImagePattern(new Image("./icons/-21.png")));
+                        if(Lib.board[i]!=-22) boardRectangle[i].setFill(new ImagePattern(new Image(
+                        		new File(parentDir, "icons/-21.png").getAbsolutePath())));
                     }
                 }
             }
@@ -202,10 +187,8 @@ public final class LibFX extends Application
             //game over so show all bombs
             uncover_bombs(i);
             //if game ends stop all clicks
-            Lib.fill(Lib.positions_uncovered,1,Lib.board_len);
             Lib.stopTimer();
-            Lib.saveGame("Lost");
-            oneSecondWonder.stop();
+            gameEnd("Lost");
             
         }
         else if(Lib.board[i]==-2)
@@ -216,24 +199,21 @@ public final class LibFX extends Application
             //game over so show all bombs
             uncover_bombs(i);
             //if game ends stop all clicks
-            Lib.fill(Lib.positions_uncovered,1,Lib.board_len);
             Lib.stopTimer();
-            Lib.saveGame("Lost");
-            oneSecondWonder.stop();
+            gameEnd("Lost");
         }
         else
         {
-            Lib.clickedRectangles++;
+            Lib.uncoverdRectangles++;
             //System.out.println(" board[i]:"+Lib.board[i]);
-            LibFX.update_position(i,Lib.board[i]);
+            update_position(i,Lib.board[i]);
             //uncover position
             Lib.positions_uncovered[i]=1;
         }
         //if game ends stop all clicks
-        if(Lib.clickedRectangles==Lib.board_len-Lib.bomb_number){
-            Lib.fill(Lib.positions_uncovered,1,Lib.board_len);
-            Lib.stopTimer();Lib.saveGame("Won");
-            oneSecondWonder.stop();
+        if(Lib.uncoverdRectangles==Lib.board_len-Lib.bomb_number){
+            Lib.stopTimer();
+            gameEnd("Won");
         }
     }
 
@@ -244,7 +224,8 @@ public final class LibFX extends Application
         if(Lib.board[position]!=-2) return;
 
         Lib.positions_uncovered[position]=1;
-        boardRectangle[position].setFill(new ImagePattern(new Image("./icons/mega_bomb_flag.png")));
+        boardRectangle[position].setFill(new ImagePattern(new Image(
+        		new File(parentDir, "icons/mega_bomb_flag.png").getAbsolutePath())));
         //declares row
         int start_position_x=position/Lib.collums;
         int accurate_x_position=start_position_x*Lib.collums;
@@ -261,7 +242,7 @@ public final class LibFX extends Application
                     if(accurate_x_position+i!=position)
                     { 
                         Lib.positions_uncovered[accurate_x_position+i]=1;
-                        boardRectangle[accurate_x_position+i].setFill(new ImagePattern(new Image("./icons/sure_flag.png")));
+                        boardRectangle[accurate_x_position+i].setFill(new ImagePattern(new Image(new File(parentDir,"icons/sure_flag.png").getAbsolutePath())));
                         Lib.board[accurate_x_position+i]-=20;
                         updateFlagInfo(+1);
                     }
@@ -282,7 +263,7 @@ public final class LibFX extends Application
                     if(i!=position)
                     { 
                         Lib.positions_uncovered[i]=1;
-                        boardRectangle[i].setFill(new ImagePattern(new Image("./icons/sure_flag.png")));
+                        boardRectangle[i].setFill(new ImagePattern(new Image(new File(parentDir,"icons/sure_flag.png").getAbsolutePath())));
                         Lib.board[i]-=20;
                         updateFlagInfo(+1);
                     }
@@ -292,31 +273,69 @@ public final class LibFX extends Application
         }
     }
 
+    //save game ,freeze all rectangles
+    private static void gameEnd(String status)
+    {
+    	Lib.fill(Lib.positions_uncovered, 1, Lib.board_len);
+        if(Lib.elapsedTime>Lib.available_time) Lib.elapsedTime=Lib.available_time;
+        Lib.saveGame(status);
+        oneSecondWonder.stop();
+    }
+    
+    //updates bomb info with
+    private static void updateBombInfo()
+    {
+    	try
+    	{ 
+        		int _l=Lib.bomb_number%10;
+        		int _m=(Lib.bomb_number/10)%10;
+        		int _f=(Lib.bomb_number/100)%10;
+        		b3.setFill(new ImagePattern(new Image(new File(parentDir,"icons/timer"+_l+".jpg").getAbsolutePath())));
+        		b2.setFill(new ImagePattern(new Image(new File(parentDir,"icons/timer"+_m+".jpg").getAbsolutePath())));
+        		b1.setFill(new ImagePattern(new Image(new File(parentDir,"icons/timer"+_f+".jpg").getAbsolutePath())));
+            return;
+    	}
+    	catch(Exception e)
+    	{
+    		System.out.println("Exception when updating time info");
+    	}
+    }
+    
     //updates time info with +1 and updates time info 
     private static void updateTimeInfo(int n)
     {
-        if(n==0){t1.setFill(new ImagePattern(new Image("./icons/timer0.jpg")));
-        t2.setFill(new ImagePattern(new Image("./icons/timer0.jpg")));
-        t3.setFill(new ImagePattern(new Image("./icons/timer0.jpg")));
-        return;}
-        gameTime++;
-        //update last flag info
-        int _l=gameTime%10;
-        int _m=(gameTime/10)%10;
-        int _f=(gameTime/100)%10;
-        
-        t3.setFill(new ImagePattern(new Image("./icons/timer"+_l+".jpg")));
-        //second digit changed
-        if(_l==0)
-        {
-            t2.setFill(new ImagePattern(new Image("./icons/timer"+_m+".jpg")));
-        }
-        //first digit changed
-        if(_m==0)
-        {
-            t1.setFill(new ImagePattern(new Image("./icons/timer"+_f+".jpg")));
-        }
-        return;
+    	try
+    	{
+    		if(gameTime==0) 
+    		{
+    	        Lib.stopTimer();
+    			gameEnd("Lost");
+                return;
+    		}
+        	if(n==0){ 
+        		if(gameTime<0)gameTime=Lib.available_time;
+        		int _l=gameTime%10;
+        		int _m=(gameTime/10)%10;
+        		int _f=(gameTime/100)%10;
+        		t3.setFill(new ImagePattern(new Image(new File(parentDir,"icons/timer"+_l+".jpg").getAbsolutePath())));
+        		t2.setFill(new ImagePattern(new Image(new File(parentDir,"icons/timer"+_m+".jpg").getAbsolutePath())));
+        		t1.setFill(new ImagePattern(new Image(new File(parentDir,"icons/timer"+_f+".jpg").getAbsolutePath())));
+            return;}
+            gameTime--;
+            //update last flag info
+            int _l=gameTime%10;
+            int _m=(gameTime/10)%10;
+            int _f=(gameTime/100)%10;
+            t3.setFill(new ImagePattern(new Image(new File(parentDir,"icons/timer"+_l+".jpg").getAbsolutePath())));
+    		t2.setFill(new ImagePattern(new Image(new File(parentDir,"icons/timer"+_m+".jpg").getAbsolutePath())));
+    		t1.setFill(new ImagePattern(new Image(new File(parentDir,"icons/timer"+_f+".jpg").getAbsolutePath())));
+
+            return;
+    	}
+    	catch(Exception e)
+    	{
+    		System.out.println("Exception when updating time info");
+    	}
     }
 
     //updates flag_num with +up and updates flag info 
@@ -325,9 +344,9 @@ public final class LibFX extends Application
         //update all to 0
         if(up==0) 
         {
-            f1.setFill(new ImagePattern(new Image("./icons/timer0.jpg")));
-            f2.setFill(new ImagePattern(new Image("./icons/timer0.jpg")));
-            f3.setFill(new ImagePattern(new Image("./icons/timer0.jpg")));
+            f1.setFill(new ImagePattern(new Image(new File(parentDir,"icons/timer0.jpg").getAbsolutePath())));
+            f2.setFill(new ImagePattern(new Image(new File(parentDir,"icons/timer0.jpg").getAbsolutePath())));
+            f3.setFill(new ImagePattern(new Image(new File(parentDir,"icons/timer0.jpg").getAbsolutePath())));
             return;
         }
         else if(up==-2)//if -2 update position
@@ -335,9 +354,9 @@ public final class LibFX extends Application
             int _l=flag_num%10;
         int _m=(flag_num/10)%10;
         int _f=(flag_num/100)%10;
-        f3.setFill(new ImagePattern(new Image("./icons/timer"+_l+".jpg")));
-        f2.setFill(new ImagePattern(new Image("./icons/timer"+_m+".jpg")));
-        f1.setFill(new ImagePattern(new Image("./icons/timer"+_f+".jpg")));
+        f3.setFill(new ImagePattern(new Image(new File(parentDir,"icons/timer"+_l+".jpg").getAbsolutePath())));
+        f2.setFill(new ImagePattern(new Image(new File(parentDir,"icons/timer"+_m+".jpg").getAbsolutePath())));
+        f1.setFill(new ImagePattern(new Image(new File(parentDir,"icons/timer"+_f+".jpg").getAbsolutePath())));
         return;
         }
         flag_num+=up;
@@ -346,22 +365,22 @@ public final class LibFX extends Application
         int _m=(flag_num/10)%10;
         int _f=(flag_num/100)%10;
         
-        f3.setFill(new ImagePattern(new Image("./icons/timer"+_l+".jpg")));
+        f3.setFill(new ImagePattern(new Image(new File(parentDir,"icons/timer"+_l+".jpg").getAbsolutePath())));
         //second digit changed
         if((_l==0&&up==+1)||(_l==9&&up==-1))
         {
-            f2.setFill(new ImagePattern(new Image("./icons/timer"+_m+".jpg")));
+            f2.setFill(new ImagePattern(new Image(new File(parentDir,"icons/timer"+_m+".jpg").getAbsolutePath())));
         }
         //first digit changed
         if((_m==0&&up==+1)||(_m==9&&up==-1))
         {
-            f1.setFill(new ImagePattern(new Image("./icons/timer"+_f+".jpg")));
+            f1.setFill(new ImagePattern(new Image(new File(parentDir,"icons/timer"+_f+".jpg").getAbsolutePath())));
         }
         return;
     }
 
     //make all rectangles on node_Game clickable and manage each click acordingly
-    public static void check_for_clicks()
+    private static void check_for_clicks()
     {
         for(int i=0;i<Lib.board_len;i++)
         {
@@ -370,7 +389,7 @@ public final class LibFX extends Application
             {
                 if(Lib.positions_uncovered[I]==1) return;
                 if(Lib.board[I]<-10) return;
-                boardRectangle[I].setFill(new ImagePattern(new Image("./icons/0.png")));
+                boardRectangle[I].setFill(new ImagePattern(new Image(new File(parentDir,"icons/0.png").getAbsolutePath())));
 
             });
             boardRectangle[i].setOnMouseReleased(event ->
@@ -390,10 +409,11 @@ public final class LibFX extends Application
                     //if there is a flag return
                     if(Lib.board[I]<-10) return;
                     //update icon 
-                    // boardRectangle[I].setFill(new ImagePattern(new Image("./icons/"+Lib.board[I]+".png")));
+                    // boardRectangle[I].setFill(new ImagePattern(new Image("/Minesweeper/icons/"+Lib.board[I]+".png")));
                     //check what to do since we clicked on position
                     try {
                         counter++;
+                        Lib.clickedRectangles++;
                         //check what has been clicked and change the icon accordingly
                         clicked_position(I);
                     } catch (Exception e) {
@@ -416,7 +436,7 @@ public final class LibFX extends Application
                     { 
                         //if position is already uncoverd then do nothing
                         if(Lib.positions_uncovered[I]==1) return;  
-                        boardRectangle[I].setFill(new ImagePattern(new Image("./icons/flag.png")));
+                        boardRectangle[I].setFill(new ImagePattern(new Image(new File(parentDir,"icons/flag.png").getAbsolutePath())));
                         updateFlagInfo(1);
                         counter++;
                         //check if this one is a megabomb and uncover if counter<5
@@ -437,7 +457,7 @@ public final class LibFX extends Application
                         counter++;
                         //add 20 since the flag is not there anymore
                         Lib.board[I]+=20;
-                        boardRectangle[I].setFill(new ImagePattern(new Image("./icons/empty.png")));
+                        boardRectangle[I].setFill(new ImagePattern(new Image(new File(parentDir,"icons/empty.png").getAbsolutePath())));
                         
                     }
                 }
@@ -445,23 +465,24 @@ public final class LibFX extends Application
         }
     }
 
-    //must be deleted for devs only
+    //for devs only
     private static void find_mega()
     {
         for(int i=0;i<Lib.board_len;i++)
         {
             if(Lib.board[i]==-2)
             {
-                boardRectangle[i].setFill(new ImagePattern(new Image("./icons/-2.png")));
+                boardRectangle[i].setFill(new ImagePattern(new Image(new File(parentDir,"icons/-2.png").getAbsolutePath())));
             }
         }
     }
-    
+   
+    //initializes all rectangles with an empty rectangle
     private static void refresh_board()
     {
         for(int i=0;i<Lib.board_len;i++)
         {
-            boardRectangle[i].setFill(new ImagePattern(new Image("./icons/empty.png")));
+            boardRectangle[i].setFill(new ImagePattern(new Image(new File(parentDir,"icons/empty.png").getAbsolutePath())));
         }
     }
 
@@ -471,28 +492,34 @@ public final class LibFX extends Application
         MenuItem menuitem=new MenuItem("Start");
         menuitem.setOnAction(new EventHandler<ActionEvent>() {
         public void handle(ActionEvent t) {
-            refresh_board();
-            try 
-            {
-                Lib.startnew(Minesweeper.scenario);                   
-                find_mega();//has to be removed---------------------------------------------------------------------------
-                Lib.clickedRectangles=0;
-                oneSecondWonder.stop();
-                gameTime=0;
-                updateTimeInfo(0);
-                flag_num=0;
-                updateFlagInfo(0);
-                // showAllBombs();
-            } 
-            catch (Exception e) 
-            {
-                    // TODO Auto-generated catch block
-                    System.out.println("Exception thrown when creating new game");
-            }
+            startNewGame();
                 
         }
     });
     return menuitem;
+    }
+    
+    //initializes everything to start new game
+    private static void startNewGame()
+    {
+    	
+    	try 
+        {
+            refresh_board();
+            Lib.startnew(Lib.scenario);
+            Lib.uncoverdRectangles=0;
+            Lib.clickedRectangles=0;
+            oneSecondWonder.stop();
+            gameTime=Lib.available_time;
+            updateTimeInfo(0);
+            flag_num=0;
+            updateFlagInfo(0);
+        } 
+        catch (Exception e) 
+        {
+                // TODO Auto-generated catch block
+                System.out.println("Exception thrown when creating new game");
+        }
     }
 
     //(Frontend) init node_Game of collums*rows rectangle blocks
@@ -503,7 +530,7 @@ public final class LibFX extends Application
         HBox[] boardHBox = new HBox[Lib.rows];
         VBox vBox=new VBox(space_between_rectangles);
         int num=0;
-        // br.setFill(new ImagePattern(new Image("./icons/empty.png")));
+        // br.setFill(new ImagePattern(new Image("/Minesweeper/icons/empty.png")));
         for(int i=0;i<Lib.collums;i++)
         {
             boardHBox[i]=new HBox(space_between_rectangles);
@@ -511,7 +538,7 @@ public final class LibFX extends Application
             {
                 /*add 15x15 rectangle Lib.row times in rowRectangle */
                 boardRectangle[num]=new Rectangle(rectangle_size,rectangle_size);
-                boardRectangle[num].setFill(new ImagePattern(new Image("./icons/empty.png")));
+                boardRectangle[num].setFill(new ImagePattern(new Image(new File(parentDir,"icons/empty.png").getAbsolutePath())));
                 boardHBox[i].getChildren().addAll(boardRectangle[num]);
                 num++;
             }
@@ -535,7 +562,7 @@ public final class LibFX extends Application
         //create new Lib
         try {
             //(Backend)creates new board based on scenario we chose 
-            Lib.startnew(Minesweeper.scenario);
+            Lib.startnew(Lib.scenario);
         } catch (Exception e) {
             // TODO Auto-generated catch block
             System.out.println("Exception creating new board");
@@ -544,9 +571,7 @@ public final class LibFX extends Application
         //(Frontend) init node_Game of collums*rows rectangle blocks
         node_Game=node_Game_init();
         root_vBox.getChildren().addAll(node_Game);
-        
         check_for_clicks();
-        find_mega();
         Scene scene1=new Scene(root_vBox);
        // Stage stage2=new Stage();
 
@@ -566,26 +591,33 @@ public final class LibFX extends Application
             public void handle(ActionEvent t)
             {
                 //updates scenario name
-                Minesweeper.scenario=file.getName();
+                Lib.scenario=file.getName();
                 //(Frontend)removes last node_Game and replaces it 
                 //with new node_Game based on the last scenario we chose
                 remove_and_add_node_Game(Medialab_Minesweeper);
+                oneSecondWonder.stop();
+                gameTime=Lib.available_time;
+                updateTimeInfo(0);
+                flag_num=0;
+                updateFlagInfo(0);
+                
             }
         });
         return menuitem_scenario;
     }
 
     //(Frontend) Swows all scenarios and if you click on one then a new game is initialized
-    public static Menu menuitem_Load_New_Game(final File folder,Stage Medialab_Minesweeper) 
+    private static Menu menuitem_Load_New_Game(final File folder,Stage Medialab_Minesweeper) 
     {
         Menu menu_Load=new Menu("Load");
         //show all files
         for (final File fileEntry : folder.listFiles()) {
             if (fileEntry.isDirectory()) {
                 menuitem_Load_New_Game(fileEntry,Medialab_Minesweeper);
-                
+                Lib.uncoverdRectangles=0;
+                Lib.clickedRectangles=0;
                 oneSecondWonder.stop();
-                gameTime=0;
+                gameTime=Lib.available_time;
                 updateTimeInfo(0);
                 flag_num=0;
                 updateFlagInfo(0);
@@ -596,7 +628,7 @@ public final class LibFX extends Application
                 //add all scenarios in menu_Load from where you can chose one
                 menu_Load.getItems().add(init_scenario(fileEntry,Medialab_Minesweeper));
                 oneSecondWonder.stop();
-                gameTime=0;
+                gameTime=Lib.available_time;
                 updateTimeInfo(0);
                 flag_num=0;
                 updateFlagInfo(0);
@@ -631,57 +663,63 @@ public final class LibFX extends Application
         tf_name.setPrefColumnCount(10);
         tf_name.setPromptText("Scenario Name");
         configureBorder(tf_name);
-        tf_name.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent e)
-            {
-                String_name=tf_name.getText();
-            }
+        tf_name.textProperty().addListener((observable, oldValue, newValue) -> {
+        	String_name = newValue;
         });
         return tf_name;
     }
     
     //create RadioButtons:scenario difficulty
-    private static VBox node_difficulty()
-    {
-        RadioButton radioutton_1=new RadioButton("1");
-        RadioButton radioutton_2=new RadioButton("2");
-        ToggleGroup tg=new ToggleGroup();
-        radioutton_1.setToggleGroup(tg);
-        radioutton_2.setToggleGroup(tg);
-        radioutton_1.setSelected(true);
-        HBox hbox_difficulty=new HBox(5,radioutton_1,radioutton_2);
-        Text tf=new Text("Difficulty level");
-        VBox vbox_difficulty=new VBox(5,tf,hbox_difficulty);
-        configureBorder(vbox_difficulty);
-        radioutton_1.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent t)
-            {
-                String_difficulty="1";
-            }
-        });
-        radioutton_2.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent t)
-            {
-                String_difficulty="2";
-            }
-        });
-        return vbox_difficulty;
-    }
-    
-    //create TextField:number of bombs
+//    private static VBox node_difficulty()
+//    {
+//        RadioButton radioutton_1=new RadioButton("1");
+//        RadioButton radioutton_2=new RadioButton("2");
+//        ToggleGroup tg=new ToggleGroup();
+//        radioutton_1.setToggleGroup(tg);
+//        radioutton_2.setToggleGroup(tg);
+//        radioutton_1.setSelected(true);
+//        HBox hbox_difficulty=new HBox(5,radioutton_1,radioutton_2);
+//        Text tf=new Text("Difficulty level");
+//        VBox vbox_difficulty=new VBox(5,tf,hbox_difficulty);
+//        configureBorder(vbox_difficulty);
+//        radioutton_1.setOnAction(new EventHandler<ActionEvent>() {
+//            public void handle(ActionEvent t)
+//            {
+//                String_difficulty="1";
+//            }
+//        });
+//        radioutton_2.setOnAction(new EventHandler<ActionEvent>() {
+//            public void handle(ActionEvent t)
+//            {
+//                String_difficulty="2";
+//            }
+//        });
+//        return vbox_difficulty;
+//    }
     private static TextField node_bombs()
     {           
         final TextField tf_bombs=new TextField();
         tf_bombs.setPrefColumnCount(10);
         tf_bombs.setPromptText("Number of Bombs");
         configureBorder(tf_bombs);
-        tf_bombs.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent e)
-            {
-                String_bombs=tf_bombs.getText();
-            }
+        tf_bombs.textProperty().addListener((observable, oldValue, newValue) -> {
+        	String_bombs = newValue;
         });
         return tf_bombs;
+    }
+    
+    
+  //create TextFiled:scenario difficulty
+    private static TextField node_difficulty()
+    {           
+        final TextField tf_difficulty=new TextField();
+        tf_difficulty.setPrefColumnCount(10);
+        tf_difficulty.setPromptText("Game Difficulty");
+        configureBorder(tf_difficulty);
+        tf_difficulty.textProperty().addListener((observable, oldValue, newValue) -> {
+        	String_difficulty = newValue;
+        });
+        return tf_difficulty;
     }
 
     //create button:has mega bomb
@@ -726,12 +764,20 @@ public final class LibFX extends Application
                 Lib.write_file();
                 stage_Create_Scenario.hide();
                 refresh_board();
-                Minesweeper.scenario=String_name+".txt";
+                Lib.scenario=String_name+".txt";
                 try 
                 {
-                    //start new game with created scenario
-                    Lib.startnew(Minesweeper.scenario);                   
-                    find_mega();
+                	//start new game with created scenario
+                	startNewGame();   
+                	updateBombInfo();
+                    //(Frontend)removes last node_Game and replaces it 
+                    //with new node_Game based on the last scenario we chose
+                    remove_and_add_node_Game(Medialab_Minesweeper);
+                    oneSecondWonder.stop();
+                    gameTime=Lib.available_time;
+                    updateTimeInfo(0);
+                    flag_num=0;
+                    updateFlagInfo(0);
                 } 
                 catch (Exception e) 
                 {
@@ -746,22 +792,19 @@ public final class LibFX extends Application
     }
 
     //create TextField:time
-    private static TextField node_timer()
-        {           
-            final TextField tf_timer=new TextField();
-            tf_timer.setPrefColumnCount(10);
-            tf_timer.setPromptText("Time");
-            configureBorder(tf_timer);
-            tf_timer.setOnAction(new EventHandler<ActionEvent>() {
-                public void handle(ActionEvent e)
-                {
-                    String_timer=tf_timer.getText();
-                }
-            });
-            return tf_timer;
-        }
+    private static TextField node_timer() {
+        final TextField tf_timer = new TextField();
+        tf_timer.setPrefColumnCount(10);
+        tf_timer.setPromptText("Time");
+        configureBorder(tf_timer);
+        tf_timer.textProperty().addListener((observable, oldValue, newValue) -> {
+            String_timer = newValue;
+        });
+        return tf_timer;
+    }
 
-    public static MenuItem menuitem_Create_Game()
+
+    private static MenuItem menuitem_Create_Game()
     {
         MenuItem menuitem_Create=new MenuItem("Create");
         menuitem_Create.setOnAction(new EventHandler <ActionEvent>()
@@ -771,16 +814,21 @@ public final class LibFX extends Application
                 Stage stage_Create_Scenario=new Stage();
                 Group root_Create_Scenario=new Group();
                 Scene scene_Create_Scenario=new Scene(
-                    root_Create_Scenario , width_scene_Create_Scenario , height_scene_Create_Scenario);
+                    root_Create_Scenario );
             
-                VBox vbox_Create=createVBox(5, 
-                    node_name(),
-                    node_difficulty(),
-                    node_bombs(),
+                VBox vbox_Create=createVBox(5,new Text("Game Name"),
+                    node_name(),new Text("Game Difficulty"),
+                    node_difficulty(),new Text("Game Bombs"),
+                    node_bombs(),new Text("Game Time"),
                     node_timer(),
                     node_has_mega_bomb(),
                     node_finish(stage_Create_Scenario)); 
 
+                vbox_Create.setStyle("-fx-background-color: #d6d6d6;"
+                        + "-fx-border-color: #d6d6d6;"
+                        + "-fx-border-width: 10;"
+                        + "-fx-border-radius: 0;"
+                        + "-fx-padding: 0;");
                 stage_Create_Scenario.setResizable(false);
                 stage_Create_Scenario.setTitle("Custom Scenario");
                 root_Create_Scenario.getChildren().addAll(vbox_Create);
@@ -803,24 +851,65 @@ public final class LibFX extends Application
         return menuitem_Exit;
     }
 
+    private static Menu menuitem_dev_buttons()
+    {
+    	 Menu menu_Dev=new Menu("Dev");
+    	 MenuItem menuitem_mega=new MenuItem("Show Mega Bomb");
+    	 MenuItem menuitem_bomb=new MenuItem("Show Bombs");
+    	 MenuItem menuitem_board=new MenuItem("Print Board");
+    	 menuitem_mega.setOnAction(new EventHandler <ActionEvent>()
+         {
+             public void handle(ActionEvent t)
+             {
+            	 find_mega();
+             }
+         });
+    	 menuitem_bomb.setOnAction(new EventHandler <ActionEvent>()
+         {
+             public void handle(ActionEvent t)
+             {
+            	 showAllBombs();
+             }
+         });
+    	 menuitem_board.setOnAction(new EventHandler <ActionEvent>()
+         {
+             public void handle(ActionEvent t)
+             {
+            	 Lib.print_board();
+             }
+         });
+         menu_Dev.getItems().addAll(menuitem_bomb,menuitem_mega,menuitem_board);
+
+         return menu_Dev;
+    }
+    
     //(Frontend) init menubar_Application 
     private static Node menubar_Application(Stage Medialab_Minesweeper)
     {
-        MenuBar menubar_Application=new MenuBar();
+    	MenuBar menubar_Application=new MenuBar();
+
         Menu menu = new Menu("Application");
 
         //(Frontend&Backend) refresh board and start a new game 
         menu.getItems().add(menuitem_Start_new_game());
-        //(Frontend) Shows all scenarios and if you click on one then a new game is initialized
-        menu.getItems().add(menuitem_Load_New_Game(new File("./src/SCENARIOS"),Medialab_Minesweeper));
-        //(Backend) create new scenario
-        menu.getItems().add(menuitem_Create_Game());
-        //end program
-        menu.getItems().add(menuitem_Exit());
-        menubar_Application.getMenus().add(menu);
 
-        menu.setStyle("-fx-background-color: #C3C3C3; ");
-        menubar_Application.setStyle("-fx-background-color: #C3C3C3; ");
+        //(Frontend) Shows all scenarios and if you click on one then a new game is initialized
+        menu.getItems().add(menuitem_Load_New_Game(new File(
+        		new File(parentDir,"src/SCENARIOS").getAbsolutePath()),
+        		Medialab_Minesweeper));
+    	
+    		
+            //(Backend) create new scenario
+            menu.getItems().add(menuitem_Create_Game());
+            //end program
+            menu.getItems().add(menuitem_Exit());
+            menu.getItems().add(menuitem_dev_buttons());
+            menubar_Application.getMenus().add(menu);
+
+            menu.setStyle("-fx-background-color: #C3C3C3; ");
+            menubar_Application.setStyle("-fx-background-color: #C3C3C3; ");
+    	
+        
         return menubar_Application;
     }
 
@@ -877,11 +966,14 @@ public final class LibFX extends Application
                 //1:ucover all bombs with no flag
                 //2:uncover all mega Bombs with no flag
                 //3:replace all false placed flags
-                if(Lib.board[i]==-1 || Lib.board[i]==-21)    boardRectangle[i].setFill(new ImagePattern(new Image("./icons/flag.png")));
-                else if(Lib.board[i]==-2|| Lib.board[i]==-22)    boardRectangle[i].setFill(new ImagePattern(new Image("./icons/mega_bomb_flag.png")));
+                if(Lib.board[i]==-1 || Lib.board[i]==-21)    boardRectangle[i].setFill(new ImagePattern(new Image(
+                		new File(parentDir,"icons/flag.png").getAbsolutePath())));
+                else if(Lib.board[i]==-2|| Lib.board[i]==-22)    boardRectangle[i].setFill(new ImagePattern(new Image(
+                        		new File(parentDir,"icons/mega_bomb_flag.png").getAbsolutePath())));
                 else {
                     if(Lib.board[i]<-10)    Lib.board[i]+=20; 
-                    boardRectangle[i].setFill(new ImagePattern(new Image("./icons/"+Lib.board[i]+".png")));}
+                    boardRectangle[i].setFill(new ImagePattern(new Image(
+                    		new File(parentDir,"icons/"+Lib.board[i]+".png").getAbsolutePath())));}
             
         }
     }
@@ -894,11 +986,11 @@ public final class LibFX extends Application
                     //1:ucover all bombs with no flag
                     //2:uncover all mega Bombs with no flag
                     //3:replace all false placed flags
-                    if(Lib.board[i]==-1 || Lib.board[i]==-21)    boardRectangle[i].setFill(new ImagePattern(new Image("./icons/flag.png")));
-                    else if(Lib.board[i]==-2|| Lib.board[i]==-22)    boardRectangle[i].setFill(new ImagePattern(new Image("./icons/mega_bomb_flag.png")));
-                    // else {
-                    //     if(Lib.board[i]<-10)    Lib.board[i]+=20; 
-                    //     boardRectangle[i].setFill(new ImagePattern(new Image("./icons/"+Lib.board[i]+".png")));}
+                    if(Lib.board[i]==-1 || Lib.board[i]==-21)    boardRectangle[i].setFill(new ImagePattern(new Image(
+                    		new File(parentDir,"icons/-1.png").getAbsolutePath())));
+                    else if(Lib.board[i]==-2|| Lib.board[i]==-22)    boardRectangle[i].setFill(new ImagePattern(new Image(
+                    		new File(parentDir,"icons/-2.png").getAbsolutePath())));
+                    
                 
             }
         }
@@ -912,11 +1004,9 @@ public final class LibFX extends Application
             {
                 Lib.stopTimer();
                 //if you instantly show solutions give zero time
-                if(Lib.elapsedTime<0) Lib.elapsedTime=0;
-                Lib.saveGame("Lost");
-                oneSecondWonder.stop();
+                Lib.elapsedTime=0;
+                gameEnd("Lost");
                showAllRectangles();
-               Lib.fill(Lib.positions_uncovered, 1, Lib.board_len);
                
             }
         });
@@ -968,43 +1058,52 @@ public final class LibFX extends Application
         secondR=-firstR*10+Lib.bomb_number/10;
         thirdR=-secondR*10+Lib.bomb_number;
         // System.out.println(thirdR);
+//    	File parentDir = new File("C:/Users/Aggelos/eclipse-workspace/Minesweeper");
+    	File imageFile = new File(parentDir, "icons/timer"+Integer.toString(firstR)+".jpg");
         try{
             b1=new Rectangle(11,21);
-        b1.setFill(new ImagePattern(new Image("./icons/timer"+Integer.toString(firstR)+".jpg")));
+        b1.setFill(new ImagePattern(new Image(imageFile.getAbsolutePath())));
+        imageFile = new File(parentDir, "icons/timer"+Integer.toString(secondR)+".jpg");
         b2=new Rectangle(11,21);
-        b2.setFill(new ImagePattern(new Image("./icons/timer"+Integer.toString(secondR)+".jpg")));
+        b2.setFill(new ImagePattern(new Image(imageFile.getAbsolutePath())));
+        imageFile = new File(parentDir, "icons/timer"+Integer.toString(thirdR)+".jpg");
         b3=new Rectangle(11,21);
-        b3.setFill(new ImagePattern(new Image("./icons/timer"+Integer.toString(thirdR)+".jpg")));
+        b3.setFill(new ImagePattern(new Image(imageFile.getAbsolutePath())));
         }
         catch (Exception e)
         {
-            System.out.println("Problem inserting images");
+            System.out.println("Problem1 inserting images");
         }
     }
     private static void numOfFlagsToRectangle()
     {
+    	
+    	File imageFile = new File(parentDir, "icons/timer0.jpg");
         try{
             f1=new Rectangle(11,21);
-        f1.setFill(new ImagePattern(new Image("./icons/timer0.jpg")));
+        f1.setFill(new ImagePattern(new Image(imageFile.getAbsolutePath())));
         f2=new Rectangle(11,21);
-        f2.setFill(new ImagePattern(new Image("./icons/timer0.jpg")));
+        f2.setFill(new ImagePattern(new Image(imageFile.getAbsolutePath())));
         f3=new Rectangle(11,21);
-        f3.setFill(new ImagePattern(new Image("./icons/timer0.jpg")));
+        f3.setFill(new ImagePattern(new Image(imageFile.getAbsolutePath())));
         }
         catch (Exception e)
         {
-            System.out.println("Problem inserting images");
+            System.out.println("Problem2 inserting images");
         }
     }
     private static void timeToRectangle()
     {
+//    	File parentDir = new File("C:/Users/Aggelos/eclipse-workspace/Minesweeper");
+    	File imageFile = new File(parentDir, "icons/timer0.jpg");
+
         try{
             t1=new Rectangle(11,21);
-        t1.setFill(new ImagePattern(new Image("./icons/timer0.jpg")));
+        t1.setFill(new ImagePattern(new Image(imageFile.getAbsolutePath())));
         t2=new Rectangle(11,21);
-        t2.setFill(new ImagePattern(new Image("./icons/timer0.jpg")));
+        t2.setFill(new ImagePattern(new Image(imageFile.getAbsolutePath())));
         t3=new Rectangle(11,21);
-        t3.setFill(new ImagePattern(new Image("./icons/timer0.jpg")));
+        t3.setFill(new ImagePattern(new Image(imageFile.getAbsolutePath())));
         }
         catch (Exception e)
         {
@@ -1017,7 +1116,7 @@ public final class LibFX extends Application
     {
         // pad=new Rectangle(4,21);
         // // pad.setFill(Color.web("#060205"));
-        // pad.setFill(new ImagePattern(new Image("./icons/timer0.jpg")));
+        // pad.setFill(new ImagePattern(new Image("/Minesweeper/icons/timer0.jpg")));
         numOfBombsToRectangle();
         numOfFlagsToRectangle();
         timeToRectangle();
@@ -1038,14 +1137,16 @@ public final class LibFX extends Application
         return hbox_info;
     }
 
+
     //(Frontend) init node_Menu 
     private static Node node_Menu_init(Stage Medialab_Minesweeper)
     {
         HBox hbox_menu=new HBox(0);
         
-        
+        try {
         //(Frontend) init menubar_Application and menubar_Details and add them to node_Menu
         hbox_menu.getChildren().addAll(menubar_Application(Medialab_Minesweeper),menubar_Details());
+        }catch(Exception e) { System.out.println("Error initializing menuBar");}
         hbox_menu.setStyle("-fx-background-color: #d6d6d6;"
                             + "-fx-border-color: #d6d6d6;"
                             + "-fx-border-width: 8;"
@@ -1068,53 +1169,41 @@ public final class LibFX extends Application
         try
         {
             stage_init(Medialab_Minesweeper);
+
+
+       	 // scene1.setFill(Color.RED);
+           Lib.startnew(Lib.scenario);
+           
+
+            
+        
         }
         catch(Exception stage_init)
         {
             System.out.println("Error initializing Medialab_Minesweeper");
         }
-        // scene1.setFill(Color.RED);
-        Lib.startnew(Minesweeper.scenario);
-        root_vBox.getChildren().addAll(gp);
-        // double scene1Width = scene1.getWidth();
+        try
+        {
 
-        Node npInfo=node_Info_init();
-        // center the node in the second row and first column
-        GridPane.setHalignment(npInfo, HPos.CENTER);
+            root_vBox.getChildren().addAll(gp);
 
-        gp.add(node_Menu_init(Medialab_Minesweeper),0,0);
-        gp.add(npInfo,0,1);
-        gp.add(node_Game_init(),0,2);
+            Node npInfo=node_Info_init();
+            // center the node in the second row and first column
+            GridPane.setHalignment(npInfo, HPos.CENTER);
 
-
-
-        // // Create a Pane object and add the GridPane to it
-        // Pane pane = new Pane();
-        // pane.getChildren().add(gp);
-        
-        // // Set the background of the Region object to red
-        // pane.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
-        
-        // // Set the preferred width of the Region object to USE_COMPUTED_SIZE
-        // pane.setPrefWidth(Region.USE_COMPUTED_SIZE);
-        
-        // // Set the preferred height of the Region object to the height of the node
-        // pane.setPrefHeight(gp.getHeight());
-        
-
-        // // Add the node to the Region object
-        // region.getChildren().add(gp);
-        // Add the Pane object to the Region object
-        // pane.getChildren().add(gp);
-        // Create the scene with the Region object as its root node
-        //  Scene scene1 = Scene(pane, 400, 400);
-        
-        
-        check_for_clicks();
-        find_mega();
-        scene1.setFill(Color.web("#d6d6d6"));
-        Medialab_Minesweeper.setScene(scene1);
-        Medialab_Minesweeper.show();
+            gp.add(node_Menu_init(Medialab_Minesweeper),0,0);
+            gp.add(npInfo,0,1);
+            gp.add(node_Game_init(),0,2);
+            
+            check_for_clicks();
+            scene1.setFill(Color.web("#d6d6d6"));
+            Medialab_Minesweeper.setScene(scene1);
+            Medialab_Minesweeper.show();
+        }
+        catch(Exception stage_init)
+        {
+            System.out.println("Error initializing Medialab_Minesweeper2");
+        }
         
     }
 }

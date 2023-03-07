@@ -1,5 +1,5 @@
+10 19 100 Won
 10 7 8 Lost
 40 7 42 Lost
 40 7 3 Lost
 9 3 2 Lost
-9 0 123 Lost
