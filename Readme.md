@@ -6,7 +6,7 @@
 
 
 #### 1. Overview:
-This is a Minesweeper game implemented in JavaFX. The game supports two difficulty levels with specific grid dimensions, mine counts, maximum time limit, and the presence of a supermine. The game can load scenario files with different game descriptions, and there is a folder called "medialab" that contains a series of scenario files with necessary information. To add new game descriptions navigato to **(7)** . The scenario files are named as "SCENARIOID.txt" and have a predefined format.
+This is a Minesweeper game implemented in JavaFX. The game supports two difficulty levels (more can be added manualy [Go to Gameplay](#gameplay)) with specific grid dimensions, mine counts, maximum time limit, and the presence of a supermine. The game can load scenario files with different game descriptions, and there is a folder called "medialab" that contains a series of scenario files with necessary information. To add new game descriptions navigato to **(7)** . The scenario files are named as "SCENARIOID.txt" and have a predefined format.
 
 #### 2. Requirements:
 To run this game, you need JavaFX 16 installed on your system.
