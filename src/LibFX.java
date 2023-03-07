@@ -1077,13 +1077,17 @@ public final class LibFX extends Application
         Lib.startnew(Minesweeper.scenario);
         root_vBox.getChildren().addAll(gp);
         // double scene1Width = scene1.getWidth();
+
+        Node npInfo=node_Info_init();
+        // center the node in the second row and first column
+        GridPane.setHalignment(npInfo, HPos.CENTER);
+
         gp.add(node_Menu_init(Medialab_Minesweeper),0,0);
-        gp.add(node_Info_init(),0,1);
+        gp.add(npInfo,0,1);
         gp.add(node_Game_init(),0,2);
 
 
-// center the node in the second row and first column
-GridPane.setHalignment(node_Info_init(), HPos.CENTER);
+
         // // Create a Pane object and add the GridPane to it
         // Pane pane = new Pane();
         // pane.getChildren().add(gp);
