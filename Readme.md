@@ -40,7 +40,7 @@ To run the game, navigate to the run_Minusweeper.bat file and replace "/path/to/
 #### 7. Add new game description 
 Make a text file named SCENARIO-*-DIFFICULTY-MARGINS.txt where * is the game difficulty of the level you will create. In the text file there will be 8 rows where at each row there will be a number. 
 Row 1:  The number: * of the named file (SCENARIO-*-DIFFICULTY-MARGINS.txt)
-Row 2:  The number of Rows the Minesweeper scenario will have
+Row 2:  The number of Rows the Minesweeper scenario will have 
 Row 3:  The number of Columns the Minesweeper scenario will have
 Row 4:  The minimun number of bombs
 Row 5:  Te maximun number of bombs

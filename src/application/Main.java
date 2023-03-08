@@ -531,10 +531,10 @@ public class Main extends Application
         VBox vBox=new VBox(space_between_rectangles);
         int num=0;
         // br.setFill(new ImagePattern(new Image("/Minesweeper/icons/empty.png")));
-        for(int i=0;i<Lib.collums;i++)
+        for(int i=0;i<Lib.rows;i++)
         {
             boardHBox[i]=new HBox(space_between_rectangles);
-            for(int k=0;k<Lib.rows;k++)
+            for(int k=0;k<Lib.collums;k++)
             {
                 /*add 15x15 rectangle Lib.row times in rowRectangle */
                 boardRectangle[num]=new Rectangle(rectangle_size,rectangle_size);
