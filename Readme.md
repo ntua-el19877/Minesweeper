@@ -22,7 +22,7 @@ Right-click a cell to flag it as a mine.
 Scenario files:
 The game can load scenario files with different game descriptions. The scenario files are named as "SCENARIO-ID.txt," where ID is a unique identifier for the scenario. 
 
-#### 5. Scenario syntax:
+#### 5. Scenario Syntax:
 The first line contains a number to specify the difficulty level for the scenario.
 The second line specifies the total number of mines for the scenario, which should be within the acceptable range for the difficulty level.
 The third line specifies the maximum time limit in seconds for the scenario.
