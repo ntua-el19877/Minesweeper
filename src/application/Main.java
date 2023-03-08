@@ -41,7 +41,6 @@ import javafx.util.Duration;
 
 public class Main extends Application
 {
-    private static int width_scene_Create_Scenario=150,height_scene_Create_Scenario=280;
     private static int rectangle_size=17;
     //private static Lib lib;
     private static int space_between_rectangles=0;
