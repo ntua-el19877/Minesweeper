@@ -4,7 +4,6 @@ package application;
 
 import java.io.File;
 import java.net.MalformedURLException;
-// import java.time.Duration;
 import java.util.ArrayList;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -42,16 +41,12 @@ import javafx.util.Duration;
 public class Main extends Application
 {
     private static int rectangle_size=17;
-    //private static Lib lib;
     private static int space_between_rectangles=0;
-    // private static int uncoverdRectangles=0;
     static File parentDir = new File(System.getProperty("user.dir"));
     static int flag_num=0;
     /*make row*collums array of rectangle photos */
     private static Rectangle[] boardRectangle = new Rectangle[Lib.rows*Lib.collums];
 
-    //     // Create a Region object to wrap the node
-    //    static Region region = new Region();
     //these rectangles will hold info about the info screen
     //b are for the bomb numbers
     //f are for the flag numbers
@@ -162,10 +157,7 @@ public class Main extends Application
             ArrayList<Integer> temp_array=Lib.get_positions_that_changed(i);
             for(int k=0;k<temp_array.size();k++)
             {
-                // System.out.println("Place: "+k);
-                // System.out.println("Value: "+temp_array.get(k));
                 
-                // if(Lib.board[temp_array.get(k)]<-10) updateFlagInfo(-1);
                 //arr.get(k) has position
                 if(temp_array.get(k)>=0){
                     // update flags
@@ -204,7 +196,6 @@ public class Main extends Application
         else
         {
             Lib.uncoverdRectangles++;
-            //System.out.println(" board[i]:"+Lib.board[i]);
             update_position(i,Lib.board[i]);
             //uncover position
             Lib.positions_uncovered[i]=1;
@@ -250,7 +241,6 @@ public class Main extends Application
         }
         for(int i=position%Lib.collums;i<Lib.board_len;i+=Lib.collums)
         {
-            //System.out.println("Problem:"+i);
             if(Lib.positions_uncovered[i]==0)
             {
                 if(Lib.board[i]>=0)
@@ -407,8 +397,6 @@ public class Main extends Application
                     if(Lib.positions_uncovered[I]==1) return;
                     //if there is a flag return
                     if(Lib.board[I]<-10) return;
-                    //update icon 
-                    // boardRectangle[I].setFill(new ImagePattern(new Image("/Minesweeper/icons/"+Lib.board[I]+".png")));
                     //check what to do since we clicked on position
                     try {
                         counter++;
@@ -529,7 +517,6 @@ public class Main extends Application
         HBox[] boardHBox = new HBox[Lib.rows];
         VBox vBox=new VBox(space_between_rectangles);
         int num=0;
-        // br.setFill(new ImagePattern(new Image("/Minesweeper/icons/empty.png")));
         for(int i=0;i<Lib.rows;i++)
         {
             boardHBox[i]=new HBox(space_between_rectangles);
@@ -667,34 +654,7 @@ public class Main extends Application
         });
         return tf_name;
     }
-    
-    //create RadioButtons:scenario difficulty
-//    private static VBox node_difficulty()
-//    {
-//        RadioButton radioutton_1=new RadioButton("1");
-//        RadioButton radioutton_2=new RadioButton("2");
-//        ToggleGroup tg=new ToggleGroup();
-//        radioutton_1.setToggleGroup(tg);
-//        radioutton_2.setToggleGroup(tg);
-//        radioutton_1.setSelected(true);
-//        HBox hbox_difficulty=new HBox(5,radioutton_1,radioutton_2);
-//        Text tf=new Text("Difficulty level");
-//        VBox vbox_difficulty=new VBox(5,tf,hbox_difficulty);
-//        configureBorder(vbox_difficulty);
-//        radioutton_1.setOnAction(new EventHandler<ActionEvent>() {
-//            public void handle(ActionEvent t)
-//            {
-//                String_difficulty="1";
-//            }
-//        });
-//        radioutton_2.setOnAction(new EventHandler<ActionEvent>() {
-//            public void handle(ActionEvent t)
-//            {
-//                String_difficulty="2";
-//            }
-//        });
-//        return vbox_difficulty;
-//    }
+
     private static TextField node_bombs()
     {           
         final TextField tf_bombs=new TextField();
@@ -742,7 +702,7 @@ public class Main extends Application
                 String_has_mega_bomb="0";
             }
         });
-        final HBox panel = createHBox(6,                                         acceptButton,
+        final HBox panel = createHBox(6,acceptButton,
                                     declineButton,
                                     acceptanceLabel);
         final VBox vbox_has_mega_bomb=createVBox(6, text_has_mega_bomb,panel);
@@ -759,7 +719,6 @@ public class Main extends Application
         button_Finish.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t)
             {
-                //Minesweeper.String_name = node_name().getText();
                 Lib.write_file();
                 stage_Create_Scenario.hide();
                 refresh_board();
@@ -780,7 +739,6 @@ public class Main extends Application
                 } 
                 catch (Exception e) 
                 {
-                    // TODO Auto-generated catch block
                     System.out.println("Exception thrown when creating new game");
                 }
               
@@ -1056,8 +1014,6 @@ public class Main extends Application
         firstR=Lib.bomb_number/100;
         secondR=-firstR*10+Lib.bomb_number/10;
         thirdR=-secondR*10+Lib.bomb_number;
-        // System.out.println(thirdR);
-//    	File parentDir = new File("C:/Users/Aggelos/eclipse-workspace/Minesweeper");
     	File imageFile = new File(parentDir, "icons/timer"+Integer.toString(firstR)+".jpg");
         try{
             b1=new Rectangle(11,21);
@@ -1093,7 +1049,6 @@ public class Main extends Application
     }
     private static void timeToRectangle()
     {
-//    	File parentDir = new File("C:/Users/Aggelos/eclipse-workspace/Minesweeper");
     	File imageFile = new File(parentDir, "icons/timer0.jpg");
 
         try{
@@ -1113,9 +1068,6 @@ public class Main extends Application
     //(frontend) init info 
     private static Node node_Info_init()
     {
-        // pad=new Rectangle(4,21);
-        // // pad.setFill(Color.web("#060205"));
-        // pad.setFill(new ImagePattern(new Image("/Minesweeper/icons/timer0.jpg")));
         numOfBombsToRectangle();
         numOfFlagsToRectangle();
         timeToRectangle();
@@ -1163,27 +1115,10 @@ public class Main extends Application
          *Scenes: scene1
          *Groups: root
          */
-        //Lib.startnew(Minesweeper.scenario);
-       // System.out.println("got here");
         try
         {
             stage_init(Medialab_Minesweeper);
-
-
-       	 // scene1.setFill(Color.RED);
-           Lib.startnew(Lib.scenario);
-           
-
-            
-        
-        }
-        catch(Exception stage_init)
-        {
-            System.out.println("Error initializing Medialab_Minesweeper");
-        }
-        try
-        {
-
+            Lib.startnew(Lib.scenario);
             root_vBox.getChildren().addAll(gp);
 
             Node npInfo=node_Info_init();
@@ -1193,15 +1128,18 @@ public class Main extends Application
             gp.add(node_Menu_init(Medialab_Minesweeper),0,0);
             gp.add(npInfo,0,1);
             gp.add(node_Game_init(),0,2);
-            
+           
             check_for_clicks();
             scene1.setFill(Color.web("#d6d6d6"));
             Medialab_Minesweeper.setScene(scene1);
             Medialab_Minesweeper.show();
+
+            
+        
         }
         catch(Exception stage_init)
         {
-            System.out.println("Error initializing Medialab_Minesweeper2");
+            System.out.println("Error initializing Medialab_Minesweeper");
         }
         
     }
