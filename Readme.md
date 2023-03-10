@@ -10,6 +10,7 @@ This is a Minesweeper game implemented in JavaFX. The game supports different di
 
 #### 2. Requirements:
 To run this game, you need JavaFX installed on your system.
+To run the game, navigate to the run_Minusweeper.bat file and replace "/path/to/javafx-sdk-19" with the path to your JavaFX SDK installation directory. Or run the Main.java inside an IDE (this project was build with eclipse).
 
 #### 3. Gameplay:
 The objective of the game is to clear the minefield without detonating any mines. The game has two base difficulty levels:
@@ -32,7 +33,6 @@ The fourth line specifies whether there is a supermine in the scenario, with "1"
 The source code files are in the "src" folder.
 The images used in the game are in the "icons" folder.
 The scenario game margins files are in the "medialab" folder.
-To run the game, navigate to the run_Minusweeper.bat file and replace "/path/to/javafx-sdk-19" with the path to your JavaFX SDK installation directory. Or run the Main.java inside an IDE (this project was build with eclipse).
 
 #### 7. Add new game description 
 Make a text file named SCENARIO-*-DIFFICULTY-MARGINS.txt where * is the game difficulty of the level you will create. In the text file there will be 8 rows where at each row there will be a number. 
